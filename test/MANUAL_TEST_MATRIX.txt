@@ -1,0 +1,11 @@
+JayePanah manual smoke checklist (panic-path focus)
+
+1. Cold start: splash auto-advances within ~1.2s; tap skips wait.
+2. Home: primary card opens self-regulation; resume sheet appears if a session was interrupted.
+3. Self-regulation: home button (top) returns to hub; grounding allows system back.
+4. Breathing: pause works; reduce motion in Settings freezes circle scaling (visual static).
+5. Emergency modal: Call uses external dialer; failure shows translated snackbar (not English-only).
+6. Helper flow: resume sheet if past step 1; home button on each helper screen.
+7. Urdu: RTL layout; key strings readable.
+8. Settings: text size scales UI; trusted contact and message template persist after restart.
+9. Android: tel: intent from manifest queries; iOS: tel in LSApplicationQueriesSchemes.

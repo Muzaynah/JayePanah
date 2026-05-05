@@ -2,7 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../providers/LanguageProvider.dart';
+import '../providers/app_settings_provider.dart';
 import '../routes/app_routes.dart';
+import '../theme/calm_palette.dart';
+import '../widgets/bilingual_line.dart';
 
 class DisclaimerScreen extends StatefulWidget {
   const DisclaimerScreen({super.key});
@@ -18,6 +21,7 @@ class _DisclaimerScreenState extends State<DisclaimerScreen> {
     final prefs = await SharedPreferences.getInstance();
     await prefs.setBool('jayepanah_onboarding_complete', true);
     if (!mounted) return;
+    context.read<AppSettingsProvider>().markInitialOnboardingComplete();
     Navigator.pushReplacementNamed(context, AppRoutes.home);
   }
 
@@ -25,21 +29,24 @@ class _DisclaimerScreenState extends State<DisclaimerScreen> {
   Widget build(BuildContext context) {
     final languageProvider = Provider.of<LanguageProvider>(context);
     final isRTL = languageProvider.isRTL;
+    final theme = Theme.of(context);
+    final cs = theme.colorScheme;
+    final muted = cs.onSurface.withCalmAlpha(0.68);
 
     return Scaffold(
-      backgroundColor: const Color(0xFFF5F3ED),
+      backgroundColor: theme.scaffoldBackgroundColor,
       body: SafeArea(
         child: Padding(
           padding: const EdgeInsets.all(24.0),
           child: TweenAnimationBuilder<double>(
             tween: Tween(begin: 0.0, end: 1.0),
             duration: const Duration(milliseconds: 500),
-            curve: Curves.easeOut,
+            curve: Curves.easeOutCubic,
             builder: (context, value, child) {
               return Opacity(
                 opacity: value,
                 child: Transform.translate(
-                  offset: Offset(0, 20 * (1 - value)),
+                  offset: Offset(0, 16 * (1 - value)),
                   child: Center(
                     child: ConstrainedBox(
                       constraints: const BoxConstraints(maxWidth: 400),
@@ -47,45 +54,60 @@ class _DisclaimerScreenState extends State<DisclaimerScreen> {
                         mainAxisAlignment: MainAxisAlignment.center,
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Text(
-                            languageProvider.t('disclaimer.title'),
-                            style: const TextStyle(
-                              fontSize: 36,
-                              color: Color(0xFF2C3E50),
+                          BilingualLine(
+                            translationKey: 'disclaimer.title',
+                            textAlign: isRTL ? TextAlign.right : TextAlign.left,
+                            primaryStyle: TextStyle(
+                              fontSize: 34,
+                              color: cs.onSurface,
                               fontWeight: FontWeight.w600,
                             ),
-                            textDirection: isRTL ? TextDirection.rtl : TextDirection.ltr,
-                          ),
-                          const SizedBox(height: 24),
-                          Container(
-                            padding: const EdgeInsets.all(24),
-                            decoration: BoxDecoration(
-                              color: Colors.white,
-                              borderRadius: BorderRadius.circular(16),
-                              border: Border.all(color: const Color(0xFFD4CFC4)),
+                            secondaryStyle: TextStyle(
+                              fontSize: 17,
+                              color: muted,
+                              height: 1.35,
                             ),
-                            child: Text(
-                              languageProvider.t('disclaimer.text'),
-                              style: const TextStyle(
+                          ),
+                          const SizedBox(height: 22),
+                          Container(
+                            padding: const EdgeInsets.all(22),
+                            decoration: BoxDecoration(
+                              color: cs.surface,
+                              borderRadius: BorderRadius.circular(16),
+                              border: Border.all(color: cs.outline.withCalmAlpha(0.28)),
+                            ),
+                            child: BilingualLine(
+                              translationKey: 'disclaimer.text',
+                              textAlign: isRTL ? TextAlign.right : TextAlign.left,
+                              primaryStyle: TextStyle(
                                 fontSize: 16,
-                                color: Color(0xFF5A6C7D),
+                                color: muted,
                                 height: 1.6,
                               ),
-                              textDirection: isRTL ? TextDirection.rtl : TextDirection.ltr,
+                              secondaryStyle: TextStyle(
+                                fontSize: 16,
+                                color: muted.withCalmAlpha(0.92),
+                                height: 1.6,
+                              ),
                             ),
                           ),
-                          const SizedBox(height: 24),
+                          const SizedBox(height: 22),
                           Row(
                             textDirection: isRTL ? TextDirection.rtl : TextDirection.ltr,
                             children: [
-                              Checkbox(
-                                value: _isChecked,
-                                onChanged: (value) {
-                                  setState(() {
-                                    _isChecked = value ?? false;
-                                  });
-                                },
-                                activeColor: const Color(0xFF4A9B99),
+                              SizedBox(
+                                width: 48,
+                                height: 48,
+                                child: Checkbox(
+                                  value: _isChecked,
+                                  onChanged: (value) {
+                                    setState(() {
+                                      _isChecked = value ?? false;
+                                    });
+                                  },
+                                  activeColor: cs.primary,
+                                  checkColor: cs.onPrimary,
+                                ),
                               ),
                               Expanded(
                                 child: GestureDetector(
@@ -94,39 +116,41 @@ class _DisclaimerScreenState extends State<DisclaimerScreen> {
                                       _isChecked = !_isChecked;
                                     });
                                   },
-                                  child: Padding(
-                                    padding: const EdgeInsets.only(top: 4.0),
-                                    child: Text(
-                                      languageProvider.t('disclaimer.understand'),
-                                      style: const TextStyle(
-                                        fontSize: 16,
-                                        color: Color(0xFF2C3E50),
-                                      ),
-                                      textDirection: isRTL ? TextDirection.rtl : TextDirection.ltr,
+                                  child: BilingualLine(
+                                    translationKey: 'disclaimer.understand',
+                                    textAlign: isRTL ? TextAlign.right : TextAlign.left,
+                                    primaryStyle: TextStyle(
+                                      fontSize: 17,
+                                      color: cs.onSurface,
+                                    ),
+                                    secondaryStyle: TextStyle(
+                                      fontSize: 16,
+                                      color: muted,
+                                      height: 1.4,
                                     ),
                                   ),
                                 ),
                               ),
                             ],
                           ),
-                          const SizedBox(height: 32),
+                          const SizedBox(height: 28),
                           SizedBox(
                             width: double.infinity,
                             height: 56,
-                            child: ElevatedButton(
+                            child: FilledButton(
                               onPressed: _isChecked ? _handleContinue : null,
-                              style: ElevatedButton.styleFrom(
-                                backgroundColor: const Color(0xFF4A9B99),
-                                foregroundColor: Colors.white,
-                                disabledBackgroundColor: const Color(0xFF4A9B99).withOpacity(0.5),
-                                disabledForegroundColor: Colors.white.withOpacity(0.7),
+                              style: FilledButton.styleFrom(
+                                backgroundColor: cs.primary,
+                                foregroundColor: cs.onPrimary,
+                                disabledBackgroundColor: cs.primary.withCalmAlpha(0.45),
+                                disabledForegroundColor: cs.onPrimary.withCalmAlpha(0.75),
                                 shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(8),
+                                  borderRadius: BorderRadius.circular(14),
                                 ),
                               ),
                               child: Text(
                                 languageProvider.t('disclaimer.continue'),
-                                style: const TextStyle(fontSize: 18),
+                                style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w600),
                                 textDirection: isRTL ? TextDirection.rtl : TextDirection.ltr,
                               ),
                             ),

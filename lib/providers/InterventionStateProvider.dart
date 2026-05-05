@@ -57,8 +57,8 @@ class InterventionStateProvider extends ChangeNotifier {
     if (helperScreenIndex != null && helperScreenIndex < HelperGuidanceScreen.values.length) {
       _helperScreen = HelperGuidanceScreen.values[helperScreenIndex];
     }
-    _groundingStep = prefs.getInt(_groundingStepKey) ?? 0;
-    _reassuranceStep = prefs.getInt(_reassuranceStepKey) ?? 0;
+    _groundingStep = (prefs.getInt(_groundingStepKey) ?? 0).clamp(0, 4);
+    _reassuranceStep = (prefs.getInt(_reassuranceStepKey) ?? 0).clamp(0, 5);
     if (sessionStartMillis != null) {
       _sessionStartTime = DateTime.fromMillisecondsSinceEpoch(sessionStartMillis);
     }
@@ -107,6 +107,17 @@ class InterventionStateProvider extends ChangeNotifier {
     _recoveryResponse = response;
     notifyListeners();
   }
+
+  /// Clears helper flow only (keeps self-regulation progress).
+  Future<void> resetHelperGuidanceOnly() async {
+    _helperScreen = null;
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.remove(_helperScreenKey);
+    notifyListeners();
+  }
+
+  bool get shouldOfferResumeHelper =>
+      _helperScreen != null && _helperScreen != HelperGuidanceScreen.immediateResponse;
 
   Future<void> resetIntervention() async {
     _selfRegulationPhase = null;

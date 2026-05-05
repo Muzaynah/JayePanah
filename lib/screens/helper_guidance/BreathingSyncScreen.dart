@@ -1,8 +1,15 @@
+import 'dart:ui' show lerpDouble;
+
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../../providers/LanguageProvider.dart';
 import '../../providers/InterventionStateProvider.dart';
+import '../../providers/app_settings_provider.dart';
+import '../../theme/calm_palette.dart';
+import '../../widgets/bilingual_line.dart';
+import '../../components/crisis_home_button.dart';
 
+/// Same rhythm as self-regulation: inhale 40% of cycle, exhale 60%.
 class BreathingSyncScreen extends StatefulWidget {
   const BreathingSyncScreen({super.key});
 
@@ -10,25 +17,41 @@ class BreathingSyncScreen extends StatefulWidget {
   State<BreathingSyncScreen> createState() => _BreathingSyncScreenState();
 }
 
-class _BreathingSyncScreenState extends State<BreathingSyncScreen> with SingleTickerProviderStateMixin {
-  late AnimationController _breathingController;
-  late Animation<double> _breathingAnimation;
+class _BreathingSyncScreenState extends State<BreathingSyncScreen>
+    with SingleTickerProviderStateMixin {
+  static const _inhaleFraction = 4 / 10;
+
+  late AnimationController _cycle;
+  double _scale = 0.9;
 
   @override
   void initState() {
     super.initState();
-    _breathingController = AnimationController(
-      duration: const Duration(seconds: 6),
+    _cycle = AnimationController(
+      duration: const Duration(seconds: 10),
       vsync: this,
-    )..repeat(reverse: true);
-    _breathingAnimation = Tween<double>(begin: 0.5, end: 1.5).animate(
-      CurvedAnimation(parent: _breathingController, curve: Curves.easeInOut),
-    );
+    )..repeat();
+    _cycle.addListener(_tick);
+    _tick();
+  }
+
+  void _tick() {
+    final v = _cycle.value;
+    double scale;
+    if (v < _inhaleFraction) {
+      final t = Curves.easeInOutCubic.transform(v / _inhaleFraction);
+      scale = lerpDouble(0.82, 1.06, t)!;
+    } else {
+      final t = Curves.easeInOutCubic.transform((v - _inhaleFraction) / (1 - _inhaleFraction));
+      scale = lerpDouble(1.06, 0.82, t)!;
+    }
+    setState(() => _scale = scale);
   }
 
   @override
   void dispose() {
-    _breathingController.dispose();
+    _cycle.removeListener(_tick);
+    _cycle.dispose();
     super.dispose();
   }
 
@@ -41,108 +64,93 @@ class _BreathingSyncScreenState extends State<BreathingSyncScreen> with SingleTi
   Widget build(BuildContext context) {
     final languageProvider = Provider.of<LanguageProvider>(context);
     final isRTL = languageProvider.isRTL;
+    final reduceMotion = context.watch<AppSettingsProvider>().reduceMotion;
+    final phase = CalmPalette.helper(context);
+    final scale = reduceMotion ? 1.0 : _scale;
 
     return Scaffold(
-      backgroundColor: const Color(0xFF7FA99E),
-      body: SafeArea(
-        child: Padding(
-          padding: const EdgeInsets.all(32.0),
-          child: Column(
-            children: [
-              Row(
-                children: List.generate(
-                  6,
-                  (index) => Expanded(
-                    child: Container(
-                      height: 4,
-                      margin: EdgeInsetsDirectional.only(
-                        end: index < 5 ? 4 : 0,
+      body: Container(
+        decoration: BoxDecoration(gradient: phase.backgroundGradient),
+        child: Stack(
+          children: [
+            SafeArea(
+              child: Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 28, vertical: 24),
+                child: Column(
+                  children: [
+                    BilingualLine(
+                      translationKey: 'helper.breathing.title',
+                      primaryStyle: TextStyle(
+                        fontSize: 24,
+                        color: phase.textPrimary,
+                        fontWeight: FontWeight.w600,
                       ),
-                      decoration: BoxDecoration(
-                        color: index <= 2 ? Colors.white : Colors.white.withOpacity(0.3),
-                        borderRadius: BorderRadius.circular(2),
+                      secondaryStyle: TextStyle(
+                        fontSize: 17,
+                        color: phase.textSecondary,
+                        height: 1.4,
                       ),
                     ),
-                  ),
-                ),
-              ),
-              Expanded(
-                child: Center(
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Text(
-                        languageProvider.t('helper.breathing.title'),
-                        style: const TextStyle(
-                          fontSize: 28,
-                          color: Colors.white,
-                          fontWeight: FontWeight.w600,
-                        ),
-                        textAlign: TextAlign.center,
-                        textDirection: isRTL ? TextDirection.rtl : TextDirection.ltr,
-                      ),
-                      const SizedBox(height: 48),
-                      AnimatedBuilder(
-                        animation: _breathingAnimation,
-                        builder: (context, child) {
-                          return Transform.scale(
-                            scale: _breathingAnimation.value,
-                            child: Container(
-                              width: 300,
-                              height: 300,
-                              decoration: BoxDecoration(
-                                shape: BoxShape.circle,
-                                color: Colors.white.withOpacity(0.2),
+                    const SizedBox(height: 32),
+                    Expanded(
+                      child: Center(
+                        child: Transform.scale(
+                          scale: scale,
+                          child: Container(
+                            width: 260,
+                            height: 260,
+                            decoration: BoxDecoration(
+                              shape: BoxShape.circle,
+                              border: Border.all(
+                                color: phase.accent.withCalmAlpha(0.45),
+                                width: 2,
                               ),
-                              child: Center(
-                                child: Container(
-                                  width: 200,
-                                  height: 200,
-                                  decoration: BoxDecoration(
-                                    shape: BoxShape.circle,
-                                    color: Colors.white.withOpacity(0.3),
-                                  ),
-                                  child: Center(
-                                    child: Container(
-                                      width: 100,
-                                      height: 100,
-                                      decoration: BoxDecoration(
-                                        shape: BoxShape.circle,
-                                        color: Colors.white.withOpacity(0.4),
-                                      ),
-                                    ),
-                                  ),
+                              color: phase.accent.withCalmAlpha(0.1),
+                            ),
+                            child: Center(
+                              child: Container(
+                                width: 140,
+                                height: 140,
+                                decoration: BoxDecoration(
+                                  shape: BoxShape.circle,
+                                  color: phase.accent.withCalmAlpha(0.22),
                                 ),
                               ),
                             ),
-                          );
-                        },
+                          ),
+                        ),
                       ),
-                    ],
-                  ),
-                ),
-              ),
-              SizedBox(
-                width: double.infinity,
-                height: 64,
-                child: ElevatedButton(
-                  onPressed: _handleNext,
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.white,
-                    foregroundColor: const Color(0xFF7FA99E),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(16),
                     ),
-                  ),
-                  child: Text(
-                    languageProvider.t('helper.next'),
-                    style: const TextStyle(fontSize: 20, fontWeight: FontWeight.w600),
-                    textDirection: isRTL ? TextDirection.rtl : TextDirection.ltr,
-                  ),
+                    SizedBox(
+                      width: double.infinity,
+                      height: 56,
+                      child: FilledButton(
+                        onPressed: _handleNext,
+                        style: FilledButton.styleFrom(
+                          backgroundColor: phase.ctaBackground,
+                          foregroundColor: phase.ctaForeground,
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(16),
+                          ),
+                        ),
+                        child: Text(
+                          languageProvider.t('helper.next'),
+                          style: const TextStyle(fontSize: 19, fontWeight: FontWeight.w600),
+                          textDirection: isRTL ? TextDirection.rtl : TextDirection.ltr,
+                        ),
+                      ),
+                    ),
+                    const SizedBox(height: 8),
+                  ],
                 ),
               ),
-            ],
-          ),
+            ),
+            CrisisHomeButton(
+              backgroundColor: phase.surface,
+              iconColor: phase.textPrimary,
+              borderColor: phase.textSecondary.withCalmAlpha(0.25),
+            ),
+          ],
         ),
       ),
     );

@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../providers/LanguageProvider.dart';
 import '../routes/app_routes.dart';
+import '../theme/calm_palette.dart';
+import '../widgets/bilingual_line.dart';
 
 class LanguageSelectionScreen extends StatelessWidget {
   const LanguageSelectionScreen({super.key});
@@ -14,10 +16,12 @@ class LanguageSelectionScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final languageProvider = Provider.of<LanguageProvider>(context);
+    final theme = Theme.of(context);
+    final cs = theme.colorScheme;
+    final onBg = cs.onSurface;
 
     return Scaffold(
-      backgroundColor: const Color(0xFFF5F3ED),
+      backgroundColor: theme.scaffoldBackgroundColor,
       body: SafeArea(
         child: Center(
           child: Padding(
@@ -30,56 +34,60 @@ class LanguageSelectionScreen extends StatelessWidget {
                   TweenAnimationBuilder<double>(
                     tween: Tween(begin: 0.0, end: 1.0),
                     duration: const Duration(milliseconds: 500),
-                    curve: Curves.easeOut,
+                    curve: Curves.easeOutCubic,
                     builder: (context, value, child) {
                       return Opacity(
                         opacity: value,
                         child: Transform.translate(
-                          offset: Offset(0, 20 * (1 - value)),
+                          offset: Offset(0, 16 * (1 - value)),
                           child: Column(
                             children: [
-                              Text(
-                                languageProvider.t('language.title'),
-                                style: const TextStyle(
-                                  fontSize: 36,
-                                  color: Color(0xFF2C3E50),
+                              BilingualLine(
+                                translationKey: 'language.title',
+                                primaryStyle: TextStyle(
+                                  fontSize: 34,
+                                  color: onBg,
                                   fontWeight: FontWeight.w600,
                                 ),
-                                textAlign: TextAlign.center,
-                              ),
-                              const SizedBox(height: 12),
-                              Text(
-                                languageProvider.t('language.subtitle'),
-                                style: const TextStyle(
-                                  fontSize: 16,
-                                  color: Color(0xFF5A6C7D),
+                                secondaryStyle: TextStyle(
+                                  fontSize: 17,
+                                  color: onBg.withCalmAlpha(0.65),
+                                  height: 1.35,
                                 ),
-                                textAlign: TextAlign.center,
                               ),
-                              const SizedBox(height: 32),
+                              const SizedBox(height: 14),
+                              BilingualLine(
+                                translationKey: 'language.subtitle',
+                                primaryStyle: TextStyle(
+                                  fontSize: 17,
+                                  color: onBg.withCalmAlpha(0.68),
+                                  height: 1.4,
+                                ),
+                                secondaryStyle: TextStyle(
+                                  fontSize: 16,
+                                  color: onBg.withCalmAlpha(0.55),
+                                  height: 1.35,
+                                ),
+                              ),
+                              const SizedBox(height: 36),
                               SizedBox(
                                 width: double.infinity,
-                                height: 80,
-                                child: ElevatedButton(
+                                height: 56,
+                                child: OutlinedButton(
                                   onPressed: () => _handleLanguageSelect(context, 'en'),
-                                  style: ElevatedButton.styleFrom(
-                                    backgroundColor: Colors.white,
-                                    foregroundColor: const Color(0xFF2C3E50),
-                                    side: const BorderSide(
-                                      color: Color(0xFF4A9B99),
-                                      width: 2,
-                                    ),
+                                  style: OutlinedButton.styleFrom(
+                                    foregroundColor: onBg,
+                                    side: BorderSide(color: cs.primary.withCalmAlpha(0.65), width: 2),
                                     shape: RoundedRectangleBorder(
                                       borderRadius: BorderRadius.circular(16),
                                     ),
-                                    elevation: 0,
+                                    backgroundColor: cs.surface,
                                   ),
-                                  onLongPress: null,
                                   child: const Text(
                                     'English',
                                     style: TextStyle(
                                       fontSize: 20,
-                                      fontWeight: FontWeight.w500,
+                                      fontWeight: FontWeight.w600,
                                     ),
                                   ),
                                 ),
@@ -87,27 +95,21 @@ class LanguageSelectionScreen extends StatelessWidget {
                               const SizedBox(height: 16),
                               SizedBox(
                                 width: double.infinity,
-                                height: 80,
-                                child: ElevatedButton(
+                                height: 56,
+                                child: FilledButton(
                                   onPressed: () => _handleLanguageSelect(context, 'ur'),
-                                  style: ElevatedButton.styleFrom(
-                                    backgroundColor: Colors.white,
-                                    foregroundColor: const Color(0xFF2C3E50),
-                                    side: const BorderSide(
-                                      color: Color(0xFF4A9B99),
-                                      width: 2,
-                                    ),
+                                  style: FilledButton.styleFrom(
+                                    backgroundColor: cs.primary,
+                                    foregroundColor: cs.onPrimary,
                                     shape: RoundedRectangleBorder(
                                       borderRadius: BorderRadius.circular(16),
                                     ),
-                                    elevation: 0,
                                   ),
-                                  onLongPress: null,
                                   child: const Text(
                                     'اردو',
                                     style: TextStyle(
                                       fontSize: 20,
-                                      fontWeight: FontWeight.w500,
+                                      fontWeight: FontWeight.w600,
                                     ),
                                     textDirection: TextDirection.rtl,
                                   ),

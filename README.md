@@ -264,7 +264,6 @@ Entry point: `lib/screens/SelfRegulationScreen.dart`
   - Instruction line:
     - Fades between “Breathe In” and “Breathe Out” (`self.breathing.inhale/exhale`).
   - Optional guidance:
-    - Text‑to‑speech using `flutter_tts` (respects current language).
     - Haptic pulses using `vibration` (if enabled in Settings).
   - Breath counter:
     - Displays the number of breaths completed (`self.breathing.count`).

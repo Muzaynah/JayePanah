@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../providers/LanguageProvider.dart';
+import '../providers/app_settings_provider.dart';
 import '../routes/app_routes.dart';
+import '../theme/calm_palette.dart';
+import '../widgets/bilingual_line.dart';
 
 const _onboardingSteps = [
   {
@@ -28,27 +31,128 @@ class OnboardingScreen extends StatefulWidget {
   State<OnboardingScreen> createState() => _OnboardingScreenState();
 }
 
-class _OnboardingScreenState extends State<OnboardingScreen> {
+class _OnboardingScreenState extends State<OnboardingScreen> with SingleTickerProviderStateMixin {
   int _currentStep = 0;
+  int? _exitingStep;
+  late AnimationController _slideController;
+  late Animation<Offset> _incomingPosition;
+  late Animation<Offset> _outgoingPosition;
+
+  @override
+  void initState() {
+    super.initState();
+    _slideController = AnimationController(
+      duration: const Duration(milliseconds: 700),
+      vsync: this,
+    );
+    _slideController.addStatusListener(_onSlideStatus);
+    _updateSlideAnimations();
+  }
+
+  void _updateSlideAnimations() {
+    final reduceMotion = context.read<AppSettingsProvider>().reduceMotion;
+    _slideController.duration = reduceMotion ? Duration.zero : const Duration(milliseconds: 700);
+    _incomingPosition = Tween<Offset>(
+      begin: const Offset(1.0, 0.0),
+      end: Offset.zero,
+    ).animate(CurvedAnimation(parent: _slideController, curve: Curves.easeInOutCubic));
+    _outgoingPosition = Tween<Offset>(
+      begin: Offset.zero,
+      end: const Offset(-1.0, 0.0),
+    ).animate(CurvedAnimation(parent: _slideController, curve: Curves.easeInOutCubic));
+  }
+
+  void _onSlideStatus(AnimationStatus status) {
+    if (status == AnimationStatus.completed) {
+      setState(() {
+        _exitingStep = null;
+      });
+      _slideController.reset();
+    }
+  }
+
+  @override
+  void dispose() {
+    _slideController.removeStatusListener(_onSlideStatus);
+    _slideController.dispose();
+    super.dispose();
+  }
 
   void _handleContinue() {
     if (_currentStep < _onboardingSteps.length - 1) {
+      final reduceMotion = context.read<AppSettingsProvider>().reduceMotion;
+      if (reduceMotion) {
+        setState(() => _currentStep++);
+        return;
+      }
+      _updateSlideAnimations();
       setState(() {
+        _exitingStep = _currentStep;
         _currentStep++;
       });
+      _slideController.forward(from: 0);
     } else {
       Navigator.pushReplacementNamed(context, AppRoutes.languageSelection);
     }
+  }
+
+  Widget _buildStepContent(int index) {
+    final languageProvider = Provider.of<LanguageProvider>(context);
+    final isRTL = languageProvider.isRTL;
+    final step = _onboardingSteps[index];
+    final theme = Theme.of(context);
+    final onBg = theme.colorScheme.onSurface;
+    final muted = onBg.withCalmAlpha(0.68);
+
+    return Column(
+      key: ValueKey(index),
+      mainAxisAlignment: MainAxisAlignment.center,
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        BilingualLine(
+          translationKey: step['titleKey']!,
+          textAlign: isRTL ? TextAlign.right : TextAlign.left,
+          primaryStyle: TextStyle(
+            fontSize: 34,
+            color: onBg,
+            fontWeight: FontWeight.w600,
+            height: 1.15,
+          ),
+          secondaryStyle: TextStyle(
+            fontSize: 17,
+            color: muted,
+            height: 1.4,
+          ),
+        ),
+        const SizedBox(height: 22),
+        BilingualLine(
+          translationKey: step['descriptionKey']!,
+          textAlign: isRTL ? TextAlign.right : TextAlign.left,
+          primaryStyle: TextStyle(
+            fontSize: 19,
+            color: muted,
+            height: 1.55,
+          ),
+          secondaryStyle: TextStyle(
+            fontSize: 17,
+            color: muted.withCalmAlpha(0.92),
+            height: 1.5,
+          ),
+        ),
+      ],
+    );
   }
 
   @override
   Widget build(BuildContext context) {
     final languageProvider = Provider.of<LanguageProvider>(context);
     final isRTL = languageProvider.isRTL;
-    final step = _onboardingSteps[_currentStep];
+    final theme = Theme.of(context);
+    final cs = theme.colorScheme;
+    final exiting = _exitingStep;
 
     return Scaffold(
-      backgroundColor: const Color(0xFFF5F3ED),
+      backgroundColor: theme.scaffoldBackgroundColor,
       body: SafeArea(
         child: Padding(
           padding: const EdgeInsets.all(24.0),
@@ -58,81 +162,42 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                 child: Center(
                   child: ConstrainedBox(
                     constraints: const BoxConstraints(maxWidth: 400),
-                    child: AnimatedSwitcher(
-                      duration: const Duration(milliseconds: 300),
-                      transitionBuilder: (child, animation) {
-                        return SlideTransition(
-                          position: Tween<Offset>(
-                            begin: Offset(isRTL ? -0.2 : 0.2, 0),
-                            end: Offset.zero,
-                          ).animate(animation),
-                          child: FadeTransition(
-                            opacity: animation,
-                            child: child,
+                    child: exiting == null
+                        ? _buildStepContent(_currentStep)
+                        : AnimatedBuilder(
+                            animation: _slideController,
+                            builder: (context, child) {
+                              return Stack(
+                                clipBehavior: Clip.hardEdge,
+                                children: [
+                                  // Assignment: SlideTransition (outgoing step)
+                                  SlideTransition(
+                                    position: _outgoingPosition,
+                                    child: _buildStepContent(exiting),
+                                  ),
+                                  // Assignment: SlideTransition (incoming step)
+                                  SlideTransition(
+                                    position: _incomingPosition,
+                                    child: _buildStepContent(_currentStep),
+                                  ),
+                                ],
+                              );
+                            },
                           ),
-                        );
-                      },
-                      child: Column(
-                        key: ValueKey(_currentStep),
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            languageProvider.t(step['titleKey']!),
-                            style: const TextStyle(
-                              fontSize: 36,
-                              color: Color(0xFF2C3E50),
-                              fontWeight: FontWeight.w600,
-                            ),
-                            textDirection: isRTL ? TextDirection.rtl : TextDirection.ltr,
-                          ),
-                          const SizedBox(height: 24),
-                          Text(
-                            languageProvider.t(step['descriptionKey']!),
-                            style: const TextStyle(
-                              fontSize: 20,
-                              color: Color(0xFF5A6C7D),
-                              height: 1.6,
-                            ),
-                            textDirection: isRTL ? TextDirection.rtl : TextDirection.ltr,
-                          ),
-                        ],
-                      ),
-                    ),
                   ),
                 ),
               ),
-              const SizedBox(height: 32),
-              Row(
-                children: List.generate(
-                  _onboardingSteps.length,
-                  (index) => Expanded(
-                    child: Container(
-                      height: 6,
-                      margin: EdgeInsetsDirectional.only(
-                        end: index < _onboardingSteps.length - 1 ? 8 : 0,
-                      ),
-                      decoration: BoxDecoration(
-                        color: index == _currentStep
-                            ? const Color(0xFF4A9B99)
-                            : const Color(0xFFD4CFC4),
-                        borderRadius: BorderRadius.circular(3),
-                      ),
-                    ),
-                  ),
-                ),
-              ),
-              const SizedBox(height: 32),
+              const SizedBox(height: 28),
               SizedBox(
                 width: double.infinity,
                 height: 56,
-                child: ElevatedButton(
+                child: FilledButton(
                   onPressed: _handleContinue,
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: const Color(0xFF4A9B99),
-                    foregroundColor: Colors.white,
+                  style: FilledButton.styleFrom(
+                    backgroundColor: cs.primary,
+                    foregroundColor: cs.onPrimary,
                     shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(8),
+                      borderRadius: BorderRadius.circular(14),
                     ),
                   ),
                   child: Row(
@@ -140,13 +205,13 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                     children: [
                       Text(
                         languageProvider.t('onboarding.continue'),
-                        style: const TextStyle(fontSize: 18),
+                        style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w600),
                         textDirection: isRTL ? TextDirection.rtl : TextDirection.ltr,
                       ),
                       const SizedBox(width: 8),
                       Icon(
                         isRTL ? Icons.chevron_left : Icons.chevron_right,
-                        size: 20,
+                        size: 22,
                       ),
                     ],
                   ),

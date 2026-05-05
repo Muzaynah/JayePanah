@@ -2,7 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../providers/LanguageProvider.dart';
+import '../providers/app_settings_provider.dart';
+import '../theme/calm_palette.dart';
 
+/// **Assignment — named animation:** [RotationTransition] on settings section chevrons ([SettingsSection]).
 class SettingsScreen extends StatefulWidget {
   const SettingsScreen({super.key});
 
@@ -12,49 +15,66 @@ class SettingsScreen extends StatefulWidget {
 
 class _SettingsScreenState extends State<SettingsScreen> {
   String? _expandedSection;
-  String _textSize = 'medium';
-  bool _reduceMotion = false;
-  bool _darkMode = false;
-  bool _audioGuidance = true;
-  String _voiceType = 'neutral';
   bool _hapticBreathing = true;
-  String _emergencyNumber = '1122';
   bool _anonymousUsage = true;
+
+  late final TextEditingController _emergencyController;
+  late final TextEditingController _trustedController;
+  late final TextEditingController _messageController;
 
   @override
   void initState() {
     super.initState();
+    _emergencyController = TextEditingController();
+    _trustedController = TextEditingController();
+    _messageController = TextEditingController();
     _loadSettings();
+  }
+
+  @override
+  void dispose() {
+    _emergencyController.dispose();
+    _trustedController.dispose();
+    _messageController.dispose();
+    super.dispose();
   }
 
   Future<void> _loadSettings() async {
     final prefs = await SharedPreferences.getInstance();
+    if (!mounted) return;
+    final lang = Provider.of<LanguageProvider>(context, listen: false);
+    final defaultMessage = lang.t('settings.message.default');
     setState(() {
-      _textSize = prefs.getString('jayepanah_textsize') ?? 'medium';
-      _reduceMotion = prefs.getBool('jayepanah_reducemotion') ?? false;
-      _darkMode = prefs.getBool('jayepanah_darkmode') ?? false;
-      _audioGuidance = prefs.getBool('jayepanah_audio') ?? true;
-      _voiceType = prefs.getString('jayepanah_voice') ?? 'neutral';
       _hapticBreathing = prefs.getBool('jayepanah_haptic') ?? true;
-      _emergencyNumber = prefs.getString('jayepanah_emergency_number') ?? '1122';
       _anonymousUsage = prefs.getBool('jayepanah_anonymous') ?? true;
+      _emergencyController.text = prefs.getString('jayepanah_emergency_number') ?? '1122';
+      _trustedController.text = prefs.getString('jayepanah_trusted_contact') ?? '';
+      _messageController.text =
+          prefs.getString('jayepanah_message_template') ?? defaultMessage;
     });
   }
 
   Future<void> _handleReset() async {
+    final languageProvider = Provider.of<LanguageProvider>(context, listen: false);
     final confirmed = await showDialog<bool>(
       context: context,
-      builder: (context) => AlertDialog(
-        title: const Text('Reset Settings'),
-        content: const Text('Are you sure you want to reset all settings?'),
+      builder: (ctx) => AlertDialog(
+        title: Text(
+          languageProvider.t('settings.reset.dialog.title'),
+          textDirection: languageProvider.isRTL ? TextDirection.rtl : TextDirection.ltr,
+        ),
+        content: Text(
+          languageProvider.t('settings.reset.dialog.body'),
+          textDirection: languageProvider.isRTL ? TextDirection.rtl : TextDirection.ltr,
+        ),
         actions: [
           TextButton(
-            onPressed: () => Navigator.pop(context, false),
-            child: const Text('Cancel'),
+            onPressed: () => Navigator.pop(ctx, false),
+            child: Text(languageProvider.t('settings.reset.dialog.cancel')),
           ),
           TextButton(
-            onPressed: () => Navigator.pop(context, true),
-            child: const Text('Reset'),
+            onPressed: () => Navigator.pop(ctx, true),
+            child: Text(languageProvider.t('settings.reset.dialog.confirm')),
           ),
         ],
       ),
@@ -63,6 +83,9 @@ class _SettingsScreenState extends State<SettingsScreen> {
     if (confirmed == true) {
       final prefs = await SharedPreferences.getInstance();
       await prefs.clear();
+      if (!mounted) return;
+      await context.read<AppSettingsProvider>().reload();
+      await languageProvider.setLanguage('en');
       if (mounted) {
         Navigator.pushNamedAndRemoveUntil(context, '/', (route) => false);
       }
@@ -78,17 +101,20 @@ class _SettingsScreenState extends State<SettingsScreen> {
   @override
   Widget build(BuildContext context) {
     final languageProvider = Provider.of<LanguageProvider>(context);
+    final appSettings = context.watch<AppSettingsProvider>();
     final isRTL = languageProvider.isRTL;
+    final theme = Theme.of(context);
+    final cs = theme.colorScheme;
 
     return Scaffold(
-      backgroundColor: const Color(0xFFF5F3ED),
+      backgroundColor: theme.scaffoldBackgroundColor,
       body: SafeArea(
         child: Column(
           children: [
             Container(
               padding: const EdgeInsets.all(24),
-              decoration: const BoxDecoration(
-                color: Color(0xFF4A9B99),
+              decoration: BoxDecoration(
+                color: cs.primary,
               ),
               child: Row(
                 textDirection: isRTL ? TextDirection.rtl : TextDirection.ltr,
@@ -97,19 +123,19 @@ class _SettingsScreenState extends State<SettingsScreen> {
                     onPressed: () => Navigator.pop(context),
                     icon: Icon(
                       isRTL ? Icons.chevron_right : Icons.chevron_left,
-                      color: Colors.white,
+                      color: cs.onPrimary,
                     ),
                     style: IconButton.styleFrom(
-                      backgroundColor: Colors.white.withOpacity(0.2),
+                      backgroundColor: cs.onPrimary.withCalmAlpha(0.15),
                     ),
                   ),
                   const SizedBox(width: 16),
                   Expanded(
                     child: Text(
                       languageProvider.t('settings.title'),
-                      style: const TextStyle(
+                      style: TextStyle(
                         fontSize: 24,
-                        color: Colors.white,
+                        color: cs.onPrimary,
                         fontWeight: FontWeight.w600,
                       ),
                       textDirection: isRTL ? TextDirection.rtl : TextDirection.ltr,
@@ -138,9 +164,9 @@ class _SettingsScreenState extends State<SettingsScreen> {
                             const SizedBox(height: 8),
                             Text(
                               languageProvider.t('settings.language'),
-                              style: const TextStyle(
+                              style: TextStyle(
                                 fontSize: 16,
-                                color: Color(0xFF2C3E50),
+                                color: theme.colorScheme.onSurface,
                                 fontWeight: FontWeight.w500,
                               ),
                               textDirection: isRTL ? TextDirection.rtl : TextDirection.ltr,
@@ -171,9 +197,9 @@ class _SettingsScreenState extends State<SettingsScreen> {
                             const SizedBox(height: 24),
                             Text(
                               languageProvider.t('settings.textsize'),
-                              style: const TextStyle(
+                              style: TextStyle(
                                 fontSize: 16,
-                                color: Color(0xFF2C3E50),
+                                color: theme.colorScheme.onSurface,
                                 fontWeight: FontWeight.w500,
                               ),
                               textDirection: isRTL ? TextDirection.rtl : TextDirection.ltr,
@@ -182,12 +208,10 @@ class _SettingsScreenState extends State<SettingsScreen> {
                             RadioListTile<String>(
                               title: Text(languageProvider.t('settings.small')),
                               value: 'small',
-                              groupValue: _textSize,
+                              groupValue: appSettings.textSize,
                               onChanged: (value) async {
                                 if (value != null) {
-                                  setState(() => _textSize = value);
-                                  final prefs = await SharedPreferences.getInstance();
-                                  await prefs.setString('jayepanah_textsize', value);
+                                  await appSettings.setTextSize(value);
                                 }
                               },
                               contentPadding: EdgeInsets.zero,
@@ -195,12 +219,10 @@ class _SettingsScreenState extends State<SettingsScreen> {
                             RadioListTile<String>(
                               title: Text(languageProvider.t('settings.medium')),
                               value: 'medium',
-                              groupValue: _textSize,
+                              groupValue: appSettings.textSize,
                               onChanged: (value) async {
                                 if (value != null) {
-                                  setState(() => _textSize = value);
-                                  final prefs = await SharedPreferences.getInstance();
-                                  await prefs.setString('jayepanah_textsize', value);
+                                  await appSettings.setTextSize(value);
                                 }
                               },
                               contentPadding: EdgeInsets.zero,
@@ -208,12 +230,10 @@ class _SettingsScreenState extends State<SettingsScreen> {
                             RadioListTile<String>(
                               title: Text(languageProvider.t('settings.large')),
                               value: 'large',
-                              groupValue: _textSize,
+                              groupValue: appSettings.textSize,
                               onChanged: (value) async {
                                 if (value != null) {
-                                  setState(() => _textSize = value);
-                                  final prefs = await SharedPreferences.getInstance();
-                                  await prefs.setString('jayepanah_textsize', value);
+                                  await appSettings.setTextSize(value);
                                 }
                               },
                               contentPadding: EdgeInsets.zero,
@@ -221,26 +241,56 @@ class _SettingsScreenState extends State<SettingsScreen> {
                             const SizedBox(height: 24),
                             SettingToggle(
                               label: languageProvider.t('settings.reducemotion'),
-                              checked: _reduceMotion,
+                              checked: appSettings.reduceMotion,
                               onChanged: (value) async {
-                                setState(() => _reduceMotion = value);
-                                final prefs = await SharedPreferences.getInstance();
-                                await prefs.setBool('jayepanah_reducemotion', value);
+                                await appSettings.setReduceMotion(value);
                               },
                               icon: Icons.flash_on,
                               isRTL: isRTL,
                             ),
-                            const SizedBox(height: 16),
-                            SettingToggle(
-                              label: languageProvider.t('settings.darkmode'),
-                              checked: _darkMode,
+                            const SizedBox(height: 20),
+                            Text(
+                              languageProvider.t('settings.appearance'),
+                              style: TextStyle(
+                                fontSize: 16,
+                                color: theme.colorScheme.onSurface,
+                                fontWeight: FontWeight.w500,
+                              ),
+                              textDirection: isRTL ? TextDirection.rtl : TextDirection.ltr,
+                            ),
+                            const SizedBox(height: 12),
+                            RadioListTile<String>(
+                              title: Text(languageProvider.t('settings.theme.system')),
+                              value: 'system',
+                              groupValue: appSettings.themePreference,
                               onChanged: (value) async {
-                                setState(() => _darkMode = value);
-                                final prefs = await SharedPreferences.getInstance();
-                                await prefs.setBool('jayepanah_darkmode', value);
+                                if (value != null) {
+                                  await appSettings.setThemePreference(value);
+                                }
                               },
-                              icon: Icons.dark_mode,
-                              isRTL: isRTL,
+                              contentPadding: EdgeInsets.zero,
+                            ),
+                            RadioListTile<String>(
+                              title: Text(languageProvider.t('settings.theme.light')),
+                              value: 'light',
+                              groupValue: appSettings.themePreference,
+                              onChanged: (value) async {
+                                if (value != null) {
+                                  await appSettings.setThemePreference(value);
+                                }
+                              },
+                              contentPadding: EdgeInsets.zero,
+                            ),
+                            RadioListTile<String>(
+                              title: Text(languageProvider.t('settings.theme.dark')),
+                              value: 'dark',
+                              groupValue: appSettings.themePreference,
+                              onChanged: (value) async {
+                                if (value != null) {
+                                  await appSettings.setThemePreference(value);
+                                }
+                              },
+                              contentPadding: EdgeInsets.zero,
                             ),
                           ],
                         ),
@@ -248,7 +298,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                       const SizedBox(height: 16),
                       SettingsSection(
                         title: languageProvider.t('settings.guidance'),
-                        icon: Icons.volume_up,
+                        icon: Icons.vibration,
                         expanded: _expandedSection == 'guidance',
                         onToggle: () => _toggleSection('guidance'),
                         isRTL: isRTL,
@@ -257,55 +307,6 @@ class _SettingsScreenState extends State<SettingsScreen> {
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             const SizedBox(height: 8),
-                            SettingToggle(
-                              label: languageProvider.t('settings.audio'),
-                              checked: _audioGuidance,
-                              onChanged: (value) async {
-                                setState(() => _audioGuidance = value);
-                                final prefs = await SharedPreferences.getInstance();
-                                await prefs.setBool('jayepanah_audio', value);
-                              },
-                              icon: Icons.volume_up,
-                              isRTL: isRTL,
-                            ),
-                            const SizedBox(height: 24),
-                            Text(
-                              languageProvider.t('settings.voicetype'),
-                              style: const TextStyle(
-                                fontSize: 16,
-                                color: Color(0xFF2C3E50),
-                                fontWeight: FontWeight.w500,
-                              ),
-                              textDirection: isRTL ? TextDirection.rtl : TextDirection.ltr,
-                            ),
-                            const SizedBox(height: 12),
-                            RadioListTile<String>(
-                              title: Text(languageProvider.t('settings.voice.neutral')),
-                              value: 'neutral',
-                              groupValue: _voiceType,
-                              onChanged: (value) async {
-                                if (value != null) {
-                                  setState(() => _voiceType = value);
-                                  final prefs = await SharedPreferences.getInstance();
-                                  await prefs.setString('jayepanah_voice', value);
-                                }
-                              },
-                              contentPadding: EdgeInsets.zero,
-                            ),
-                            RadioListTile<String>(
-                              title: Text(languageProvider.t('settings.voice.human')),
-                              value: 'human',
-                              groupValue: _voiceType,
-                              onChanged: (value) async {
-                                if (value != null) {
-                                  setState(() => _voiceType = value);
-                                  final prefs = await SharedPreferences.getInstance();
-                                  await prefs.setString('jayepanah_voice', value);
-                                }
-                              },
-                              contentPadding: EdgeInsets.zero,
-                            ),
-                            const SizedBox(height: 24),
                             SettingToggle(
                               label: languageProvider.t('settings.haptic'),
                               checked: _hapticBreathing,
@@ -343,9 +344,8 @@ class _SettingsScreenState extends State<SettingsScreen> {
                             ),
                             const SizedBox(height: 12),
                             TextField(
-                              controller: TextEditingController(text: _emergencyNumber),
+                              controller: _emergencyController,
                               onChanged: (value) async {
-                                setState(() => _emergencyNumber = value);
                                 final prefs = await SharedPreferences.getInstance();
                                 await prefs.setString('jayepanah_emergency_number', value);
                               },
@@ -379,12 +379,36 @@ class _SettingsScreenState extends State<SettingsScreen> {
                             ),
                             const SizedBox(height: 8),
                             Text(
-                              'Feature coming soon',
+                              languageProvider.t('settings.contacts.hint'),
                               style: const TextStyle(
                                 fontSize: 14,
                                 color: Color(0xFF5A6C7D),
+                                height: 1.5,
                               ),
                               textDirection: isRTL ? TextDirection.rtl : TextDirection.ltr,
+                            ),
+                            const SizedBox(height: 12),
+                            TextField(
+                              controller: _trustedController,
+                              onChanged: (value) async {
+                                final prefs = await SharedPreferences.getInstance();
+                                await prefs.setString('jayepanah_trusted_contact', value);
+                              },
+                              decoration: InputDecoration(
+                                border: OutlineInputBorder(
+                                  borderRadius: BorderRadius.circular(12),
+                                  borderSide: const BorderSide(color: Color(0xFFD4CFC4)),
+                                ),
+                                enabledBorder: OutlineInputBorder(
+                                  borderRadius: BorderRadius.circular(12),
+                                  borderSide: const BorderSide(color: Color(0xFFD4CFC4)),
+                                ),
+                                focusedBorder: OutlineInputBorder(
+                                  borderRadius: BorderRadius.circular(12),
+                                  borderSide: const BorderSide(color: Color(0xFF4A9B99), width: 2),
+                                ),
+                                contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+                              ),
                             ),
                             const SizedBox(height: 24),
                             Text(
@@ -398,12 +422,37 @@ class _SettingsScreenState extends State<SettingsScreen> {
                             ),
                             const SizedBox(height: 8),
                             Text(
-                              'Feature coming soon',
+                              languageProvider.t('settings.message.hint'),
                               style: const TextStyle(
                                 fontSize: 14,
                                 color: Color(0xFF5A6C7D),
+                                height: 1.5,
                               ),
                               textDirection: isRTL ? TextDirection.rtl : TextDirection.ltr,
+                            ),
+                            const SizedBox(height: 12),
+                            TextField(
+                              controller: _messageController,
+                              maxLines: 3,
+                              onChanged: (value) async {
+                                final prefs = await SharedPreferences.getInstance();
+                                await prefs.setString('jayepanah_message_template', value);
+                              },
+                              decoration: InputDecoration(
+                                border: OutlineInputBorder(
+                                  borderRadius: BorderRadius.circular(12),
+                                  borderSide: const BorderSide(color: Color(0xFFD4CFC4)),
+                                ),
+                                enabledBorder: OutlineInputBorder(
+                                  borderRadius: BorderRadius.circular(12),
+                                  borderSide: const BorderSide(color: Color(0xFFD4CFC4)),
+                                ),
+                                focusedBorder: OutlineInputBorder(
+                                  borderRadius: BorderRadius.circular(12),
+                                  borderSide: const BorderSide(color: Color(0xFF4A9B99), width: 2),
+                                ),
+                                contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+                              ),
                             ),
                           ],
                         ),
@@ -473,11 +522,13 @@ class _SettingsScreenState extends State<SettingsScreen> {
                             const SizedBox(height: 12),
                             SizedBox(
                               width: double.infinity,
-                              height: 48,
-                              child: ElevatedButton(
+                              height: 52,
+                              child: FilledButton(
                                 onPressed: _handleReset,
-                                style: ElevatedButton.styleFrom(
-                                  backgroundColor: const Color(0xFFD64545),
+                                style: FilledButton.styleFrom(
+                                  backgroundColor: Theme.of(context).brightness == Brightness.dark
+                                      ? CalmPalette.darkMidBlue
+                                      : CalmPalette.lightMidBlue,
                                   foregroundColor: Colors.white,
                                   shape: RoundedRectangleBorder(
                                     borderRadius: BorderRadius.circular(12),
@@ -485,7 +536,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                                 ),
                                 child: Text(
                                   languageProvider.t('settings.reset.button'),
-                                  style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w500),
+                                  style: const TextStyle(fontSize: 17, fontWeight: FontWeight.w600),
                                   textDirection: isRTL ? TextDirection.rtl : TextDirection.ltr,
                                 ),
                               ),
@@ -564,6 +615,16 @@ class _SettingsScreenState extends State<SettingsScreen> {
                               ),
                               textDirection: isRTL ? TextDirection.rtl : TextDirection.ltr,
                             ),
+                            const SizedBox(height: 24),
+                            Text(
+                              languageProvider.t('settings.store.privacy'),
+                              style: const TextStyle(
+                                fontSize: 14,
+                                color: Color(0xFF5A6C7D),
+                                height: 1.6,
+                              ),
+                              textDirection: isRTL ? TextDirection.rtl : TextDirection.ltr,
+                            ),
                           ],
                         ),
                       ),
@@ -579,7 +640,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
   }
 }
 
-class SettingsSection extends StatelessWidget {
+class SettingsSection extends StatefulWidget {
   final String title;
   final IconData icon;
   final bool expanded;
@@ -598,14 +659,64 @@ class SettingsSection extends StatelessWidget {
   });
 
   @override
+  State<SettingsSection> createState() => _SettingsSectionState();
+}
+
+class _SettingsSectionState extends State<SettingsSection> with SingleTickerProviderStateMixin {
+  late AnimationController _chevronController;
+  late Animation<double> _chevronTurns;
+
+  @override
+  void initState() {
+    super.initState();
+    _chevronController = AnimationController(
+      duration: const Duration(milliseconds: 850),
+      vsync: this,
+    );
+    _chevronTurns = Tween<double>(begin: 0.0, end: 0.5).animate(
+      CurvedAnimation(parent: _chevronController, curve: Curves.easeInOutCubic),
+    );
+    if (widget.expanded) {
+      _chevronController.value = 1.0;
+    }
+  }
+
+  @override
+  void didUpdateWidget(SettingsSection oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (oldWidget.expanded != widget.expanded) {
+      final rm = Provider.of<AppSettingsProvider>(context, listen: false).reduceMotion;
+      _chevronController.duration = rm ? Duration.zero : const Duration(milliseconds: 850);
+      if (widget.expanded) {
+        _chevronController.forward();
+      } else {
+        _chevronController.reverse();
+      }
+    }
+  }
+
+  @override
+  void dispose() {
+    _chevronController.dispose();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final surface = theme.colorScheme.surface;
+    final onSurface = theme.colorScheme.onSurface;
+    final primary = theme.colorScheme.primary;
+    final outline = theme.colorScheme.outline.withCalmAlpha(0.35);
+
     return Container(
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: surface,
         borderRadius: BorderRadius.circular(16),
+        border: Border.all(color: outline.withCalmAlpha(0.5)),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.05),
+            color: Colors.black.withCalmAlpha(theme.brightness == Brightness.dark ? 0.2 : 0.05),
             blurRadius: 4,
             offset: const Offset(0, 2),
           ),
@@ -618,7 +729,7 @@ class SettingsSection extends StatelessWidget {
           Material(
             color: Colors.transparent,
             child: InkWell(
-              onTap: onToggle,
+              onTap: widget.onToggle,
               borderRadius: const BorderRadius.only(
                 topLeft: Radius.circular(16),
                 topRight: Radius.circular(16),
@@ -626,34 +737,37 @@ class SettingsSection extends StatelessWidget {
               child: Padding(
                 padding: const EdgeInsets.all(20),
                 child: Row(
-                  textDirection: isRTL ? TextDirection.rtl : TextDirection.ltr,
+                  textDirection: widget.isRTL ? TextDirection.rtl : TextDirection.ltr,
                   children: [
                     Container(
                       width: 40,
                       height: 40,
                       decoration: BoxDecoration(
-                        color: const Color(0xFF4A9B99).withOpacity(0.1),
+                        color: primary.withCalmAlpha(0.12),
                         borderRadius: BorderRadius.circular(12),
                       ),
-                      child: Icon(icon, color: const Color(0xFF4A9B99), size: 20),
+                      child: Icon(widget.icon, color: primary, size: 20),
                     ),
                     const SizedBox(width: 16),
                     Expanded(
                       child: Text(
-                        title,
-                        style: const TextStyle(
+                        widget.title,
+                        style: TextStyle(
                           fontSize: 18,
-                          color: Color(0xFF2C3E50),
+                          color: onSurface,
                           fontWeight: FontWeight.w600,
                         ),
-                        textDirection: isRTL ? TextDirection.rtl : TextDirection.ltr,
+                        textDirection: widget.isRTL ? TextDirection.rtl : TextDirection.ltr,
                       ),
                     ),
-                    Icon(
-                      isRTL
-                          ? (expanded ? Icons.chevron_left : Icons.chevron_right)
-                          : (expanded ? Icons.chevron_right : Icons.chevron_left),
-                      color: const Color(0xFF5A6C7D),
+                    // Assignment: RotationTransition
+                    RotationTransition(
+                      turns: _chevronTurns,
+                      child: Icon(
+                        Icons.keyboard_arrow_down_rounded,
+                        color: onSurface.withCalmAlpha(0.55),
+                        size: 28,
+                      ),
                     ),
                   ],
                 ),
@@ -661,20 +775,20 @@ class SettingsSection extends StatelessWidget {
             ),
           ),
           AnimatedSize(
-            duration: const Duration(milliseconds: 200),
-            curve: Curves.easeInOut,
+            duration: const Duration(milliseconds: 400),
+            curve: Curves.easeInOutCubic,
             alignment: Alignment.topCenter,
-            child: expanded
+            child: widget.expanded
                 ? Padding(
                     padding: const EdgeInsets.fromLTRB(20, 0, 20, 20),
                     child: Container(
                       padding: const EdgeInsets.only(top: 20),
                       decoration: BoxDecoration(
                         border: Border(
-                          top: BorderSide(color: const Color(0xFFD4CFC4).withOpacity(0.3)),
+                          top: BorderSide(color: outline.withCalmAlpha(0.6)),
                         ),
                       ),
-                      child: child,
+                      child: widget.child,
                     ),
                   )
                 : const SizedBox.shrink(),
@@ -703,6 +817,8 @@ class SettingToggle extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final onSurface = Theme.of(context).colorScheme.onSurface;
+    final primary = Theme.of(context).colorScheme.primary;
     return Row(
       textDirection: isRTL ? TextDirection.rtl : TextDirection.ltr,
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -714,15 +830,15 @@ class SettingToggle extends StatelessWidget {
             mainAxisSize: MainAxisSize.min,
             children: [
               if (icon != null) ...[
-                Icon(icon, color: const Color(0xFF5A6C7D), size: 20),
+                Icon(icon, color: onSurface.withCalmAlpha(0.55), size: 20),
                 const SizedBox(width: 12),
               ],
               Flexible(
                 child: Text(
                   label,
-                  style: const TextStyle(
+                  style: TextStyle(
                     fontSize: 16,
-                    color: Color(0xFF2C3E50),
+                    color: onSurface,
                   ),
                   textDirection: isRTL ? TextDirection.rtl : TextDirection.ltr,
                   overflow: TextOverflow.ellipsis,
@@ -734,7 +850,8 @@ class SettingToggle extends StatelessWidget {
         Switch(
           value: checked,
           onChanged: onChanged,
-          activeColor: const Color(0xFF4A9B99),
+          activeThumbColor: primary,
+          activeTrackColor: primary.withCalmAlpha(0.45),
         ),
       ],
     );
