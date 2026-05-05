@@ -38,7 +38,9 @@ class _AssessmentScreenState extends State<AssessmentScreen> {
     final phase = CalmPalette.helper(context);
     final key = _steps[_step];
 
-    return Scaffold(
+    return PopScope(
+      canPop: false,
+      child: Scaffold(
       body: Container(
         decoration: BoxDecoration(gradient: phase.backgroundGradient),
         child: Stack(
@@ -111,6 +113,7 @@ class _AssessmentScreenState extends State<AssessmentScreen> {
             ),
           ],
         ),
+      ),
       ),
     );
   }

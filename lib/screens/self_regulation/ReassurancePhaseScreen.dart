@@ -36,7 +36,9 @@ class ReassurancePhaseScreen extends StatelessWidget {
     final message = _reassuranceMessages[currentStep];
     final phase = CalmPalette.regulation(context);
 
-    return Scaffold(
+    return PopScope(
+      canPop: false,
+      child: Scaffold(
       body: Container(
         decoration: BoxDecoration(gradient: phase.backgroundGradient),
         child: Stack(
@@ -97,6 +99,7 @@ class ReassurancePhaseScreen extends StatelessWidget {
             ),
           ],
         ),
+      ),
       ),
     );
   }

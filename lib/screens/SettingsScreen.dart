@@ -4,6 +4,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import '../providers/LanguageProvider.dart';
 import '../providers/app_settings_provider.dart';
 import '../theme/calm_palette.dart';
+import '../components/EmergencyModal.dart';
 
 /// **Assignment — named animation:** [RotationTransition] on settings section chevrons ([SettingsSection]).
 class SettingsScreen extends StatefulWidget {
@@ -388,27 +389,49 @@ class _SettingsScreenState extends State<SettingsScreen> {
                               textDirection: isRTL ? TextDirection.rtl : TextDirection.ltr,
                             ),
                             const SizedBox(height: 12),
-                            TextField(
-                              controller: _trustedController,
-                              onChanged: (value) async {
-                                final prefs = await SharedPreferences.getInstance();
-                                await prefs.setString('jayepanah_trusted_contact', value);
-                              },
-                              decoration: InputDecoration(
-                                border: OutlineInputBorder(
-                                  borderRadius: BorderRadius.circular(12),
-                                  borderSide: const BorderSide(color: Color(0xFFD4CFC4)),
+                            Row(
+                              children: [
+                                Expanded(
+                                  child: TextField(
+                                    controller: _trustedController,
+                                    keyboardType: TextInputType.phone,
+                                    onChanged: (value) async {
+                                      final prefs = await SharedPreferences.getInstance();
+                                      await prefs.setString('jayepanah_trusted_contact', value);
+                                    },
+                                    decoration: InputDecoration(
+                                      border: OutlineInputBorder(
+                                        borderRadius: BorderRadius.circular(12),
+                                        borderSide: const BorderSide(color: Color(0xFFD4CFC4)),
+                                      ),
+                                      enabledBorder: OutlineInputBorder(
+                                        borderRadius: BorderRadius.circular(12),
+                                        borderSide: const BorderSide(color: Color(0xFFD4CFC4)),
+                                      ),
+                                      focusedBorder: OutlineInputBorder(
+                                        borderRadius: BorderRadius.circular(12),
+                                        borderSide: const BorderSide(color: Color(0xFF4A9B99), width: 2),
+                                      ),
+                                      contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+                                    ),
+                                  ),
                                 ),
-                                enabledBorder: OutlineInputBorder(
-                                  borderRadius: BorderRadius.circular(12),
-                                  borderSide: const BorderSide(color: Color(0xFFD4CFC4)),
+                                const SizedBox(width: 12),
+                                SizedBox(
+                                  height: 54,
+                                  child: OutlinedButton.icon(
+                                    onPressed: _trustedController.text.isEmpty
+                                        ? null
+                                        : () => EmergencyModal.launchContactCall(context),
+                                    icon: const Icon(Icons.phone_rounded, size: 20),
+                                    label: const Text('Test'),
+                                    style: OutlinedButton.styleFrom(
+                                      disabledForegroundColor: const Color(0xFFD4CFC4),
+                                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                                    ),
+                                  ),
                                 ),
-                                focusedBorder: OutlineInputBorder(
-                                  borderRadius: BorderRadius.circular(12),
-                                  borderSide: const BorderSide(color: Color(0xFF4A9B99), width: 2),
-                                ),
-                                contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
-                              ),
+                              ],
                             ),
                             const SizedBox(height: 24),
                             Text(

@@ -133,6 +133,81 @@ class EmergencyModal extends StatelessWidget {
     }
   }
 
+  static Future<void> launchContactCall(BuildContext context) async {
+    final languageProvider = Provider.of<LanguageProvider>(context, listen: false);
+    final prefs = await SharedPreferences.getInstance();
+    final contactNumber = prefs.getString('jayepanah_trusted_contact');
+
+    if (contactNumber == null || contactNumber.isEmpty) {
+      if (context.mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text(languageProvider.t('emergency.no_contact'))),
+        );
+      }
+      return;
+    }
+
+    final uri = Uri.parse('tel:$contactNumber');
+    try {
+      if (await canLaunchUrl(uri)) {
+        await launchUrl(uri, mode: LaunchMode.externalApplication);
+      } else {
+        if (context.mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text(languageProvider.t('emergency.call_failed'))),
+          );
+        }
+      }
+    } catch (_) {
+      if (context.mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text(languageProvider.t('emergency.call_failed'))),
+        );
+      }
+    }
+  }
+
+  static Future<void> launchContactSms(BuildContext context) async {
+    final languageProvider = Provider.of<LanguageProvider>(context, listen: false);
+    final prefs = await SharedPreferences.getInstance();
+    final contactNumber = prefs.getString('jayepanah_trusted_contact');
+    final messageTemplate = prefs.getString('jayepanah_message_template');
+
+    if (contactNumber == null || contactNumber.isEmpty) {
+      if (context.mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text(languageProvider.t('emergency.no_contact'))),
+        );
+      }
+      return;
+    }
+
+    final message = messageTemplate ?? languageProvider.t('settings.message.default');
+    final uri = Uri.parse('sms:$contactNumber?body=${Uri.encodeComponent(message)}');
+    try {
+      if (await canLaunchUrl(uri)) {
+        await launchUrl(uri);
+      } else {
+        if (context.mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text(languageProvider.t('emergency.call_failed'))),
+          );
+        }
+      }
+    } catch (_) {
+      if (context.mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text(languageProvider.t('emergency.call_failed'))),
+        );
+      }
+    }
+  }
+
+  Future<String?> _getTrustedContact() async {
+    final prefs = await SharedPreferences.getInstance();
+    return prefs.getString('jayepanah_trusted_contact');
+  }
+
   @override
   Widget build(BuildContext context) {
     final languageProvider = Provider.of<LanguageProvider>(context);
@@ -215,7 +290,65 @@ class EmergencyModal extends StatelessWidget {
               ),
             ),
           ),
-          const SizedBox(height: 10),
+          const SizedBox(height: 12),
+          FutureBuilder<String?>(
+            future: _getTrustedContact(),
+            builder: (context, snapshot) {
+              final hasContact = snapshot.data != null && snapshot.data!.isNotEmpty;
+              if (!hasContact) return const SizedBox.shrink();
+              return Padding(
+                padding: const EdgeInsets.only(bottom: 12),
+                child: SizedBox(
+                  width: double.infinity,
+                  height: 48,
+                  child: OutlinedButton(
+                    onPressed: () => EmergencyModal.launchContactCall(context),
+                    style: OutlinedButton.styleFrom(
+                      foregroundColor: style.accent,
+                      side: BorderSide(color: style.accent.withCalmAlpha(0.5)),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(14),
+                      ),
+                    ),
+                    child: Text(
+                      languageProvider.t('emergency.contact_call'),
+                      style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w500),
+                      textDirection: isRTL ? TextDirection.rtl : TextDirection.ltr,
+                    ),
+                  ),
+                ),
+              );
+            },
+          ),
+          FutureBuilder<String?>(
+            future: _getTrustedContact(),
+            builder: (context, snapshot) {
+              final hasContact = snapshot.data != null && snapshot.data!.isNotEmpty;
+              if (!hasContact) return const SizedBox.shrink();
+              return Padding(
+                padding: const EdgeInsets.only(bottom: 12),
+                child: SizedBox(
+                  width: double.infinity,
+                  height: 48,
+                  child: OutlinedButton(
+                    onPressed: () => EmergencyModal.launchContactSms(context),
+                    style: OutlinedButton.styleFrom(
+                      foregroundColor: style.accent,
+                      side: BorderSide(color: style.accent.withCalmAlpha(0.5)),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(14),
+                      ),
+                    ),
+                    child: Text(
+                      languageProvider.t('emergency.contact_sms'),
+                      style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w500),
+                      textDirection: isRTL ? TextDirection.rtl : TextDirection.ltr,
+                    ),
+                  ),
+                ),
+              );
+            },
+          ),
           SizedBox(
             width: double.infinity,
             height: 50,

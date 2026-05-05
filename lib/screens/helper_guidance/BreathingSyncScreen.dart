@@ -68,7 +68,9 @@ class _BreathingSyncScreenState extends State<BreathingSyncScreen>
     final phase = CalmPalette.helper(context);
     final scale = reduceMotion ? 1.0 : _scale;
 
-    return Scaffold(
+    return PopScope(
+      canPop: false,
+      child: Scaffold(
       body: Container(
         decoration: BoxDecoration(gradient: phase.backgroundGradient),
         child: Stack(
@@ -152,6 +154,7 @@ class _BreathingSyncScreenState extends State<BreathingSyncScreen>
             ),
           ],
         ),
+      ),
       ),
     );
   }

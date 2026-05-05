@@ -35,7 +35,9 @@ class _EscalationScreenState extends State<EscalationScreen> {
     final isRTL = languageProvider.isRTL;
     final phase = CalmPalette.helper(context);
 
-    return Scaffold(
+    return PopScope(
+      canPop: false,
+      child: Scaffold(
       body: Container(
         decoration: BoxDecoration(gradient: phase.backgroundGradient),
         child: Stack(
@@ -220,6 +222,7 @@ class _EscalationScreenState extends State<EscalationScreen> {
             ),
           ],
         ),
+      ),
       ),
     );
   }

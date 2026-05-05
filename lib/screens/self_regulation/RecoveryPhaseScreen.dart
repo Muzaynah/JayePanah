@@ -42,8 +42,10 @@ class _RecoveryPhaseScreenState extends State<RecoveryPhaseScreen> {
     final isRTL = languageProvider.isRTL;
     final phase = CalmPalette.recovery(context);
 
-    return Scaffold(
-      body: Container(
+    return PopScope(
+      canPop: false,
+      child: Scaffold(
+        body: Container(
         decoration: BoxDecoration(gradient: phase.backgroundGradient),
         child: Stack(
           children: [
@@ -155,6 +157,7 @@ class _RecoveryPhaseScreenState extends State<RecoveryPhaseScreen> {
             ),
           ],
         ),
+      ),
       ),
     );
   }

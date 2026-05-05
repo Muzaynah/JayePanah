@@ -35,7 +35,9 @@ class GroundingPhaseScreen extends StatelessWidget {
     final step = _groundingSteps[currentStep];
     final phase = CalmPalette.regulation(context);
 
-    return Scaffold(
+    return PopScope(
+      canPop: false,
+      child: Scaffold(
       body: Container(
         decoration: BoxDecoration(gradient: phase.backgroundGradient),
         child: Stack(
@@ -119,6 +121,7 @@ class GroundingPhaseScreen extends StatelessWidget {
             ),
           ],
         ),
+      ),
       ),
     );
   }

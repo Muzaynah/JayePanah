@@ -151,6 +151,125 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
     super.dispose();
   }
 
+  Future<SeverityLevel?> _showSeverityCheck() async {
+    final lang = context.read<LanguageProvider>();
+    final dark = Theme.of(context).brightness == Brightness.dark;
+    final panel = dark ? CalmPalette.darkCrisisBg : const Color(0xFFEEF2F6);
+    final onPanel = dark ? const Color(0xFFE4E9EE) : const Color(0xFF1A2832);
+    final muted = dark ? const Color(0xFFA8B4BF) : const Color(0xFF4A5A66);
+    final accent = dark ? CalmPalette.darkCalmBlue : CalmPalette.lightCalmBlue;
+
+    return showModalBottomSheet<SeverityLevel>(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      builder: (ctx) {
+        return Padding(
+          padding: EdgeInsets.only(bottom: MediaQuery.paddingOf(ctx).bottom),
+          child: Container(
+            margin: const EdgeInsets.all(12),
+            padding: const EdgeInsets.fromLTRB(24, 20, 24, 24),
+            decoration: BoxDecoration(
+              color: panel,
+              borderRadius: BorderRadius.circular(22),
+              border: Border.all(color: accent.withCalmAlpha(0.22)),
+            ),
+            child: SafeArea(
+              top: false,
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  Text(
+                    lang.t('severity.title'),
+                    textAlign: TextAlign.start,
+                    style: TextStyle(
+                      fontSize: 22,
+                      fontWeight: FontWeight.w600,
+                      color: onPanel,
+                      height: 1.25,
+                    ),
+                  ),
+                  const SizedBox(height: 18),
+                  _severityButton(
+                    label: lang.t('severity.mild'),
+                    subtitle: lang.t('severity.mild.sub'),
+                    severity: SeverityLevel.mild,
+                    accent: accent,
+                    muted: muted,
+                    ctx: ctx,
+                  ),
+                  const SizedBox(height: 10),
+                  _severityButton(
+                    label: lang.t('severity.moderate'),
+                    subtitle: lang.t('severity.moderate.sub'),
+                    severity: SeverityLevel.moderate,
+                    accent: accent,
+                    muted: muted,
+                    ctx: ctx,
+                  ),
+                  const SizedBox(height: 10),
+                  _severityButton(
+                    label: lang.t('severity.severe'),
+                    subtitle: lang.t('severity.severe.sub'),
+                    severity: SeverityLevel.severe,
+                    accent: accent,
+                    muted: muted,
+                    ctx: ctx,
+                  ),
+                ],
+              ),
+            ),
+          ),
+        );
+      },
+    );
+  }
+
+  Widget _severityButton({
+    required String label,
+    required String subtitle,
+    required SeverityLevel severity,
+    required Color accent,
+    required Color muted,
+    required BuildContext ctx,
+  }) {
+    return SizedBox(
+      height: 72,
+      child: OutlinedButton(
+        onPressed: () => Navigator.pop(ctx, severity),
+        style: OutlinedButton.styleFrom(
+          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+          side: BorderSide(color: accent.withCalmAlpha(0.35)),
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
+        ),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              label,
+              style: TextStyle(
+                fontSize: 17,
+                fontWeight: FontWeight.w600,
+                color: accent,
+              ),
+            ),
+            const SizedBox(height: 4),
+            Text(
+              subtitle,
+              style: TextStyle(
+                fontSize: 14,
+                color: muted,
+                height: 1.3,
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
   Future<void> _openSelfRegulation() async {
     final intervention = context.read<InterventionStateProvider>();
     final lang = context.read<LanguageProvider>();
@@ -237,6 +356,14 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
         await intervention.resetIntervention();
         await intervention.startSelfRegulation();
       }
+    } else {
+      final severity = await _showSeverityCheck();
+      if (!mounted || severity == null) return;
+      if (severity == SeverityLevel.severe) {
+        await EmergencyModal.show(context);
+        if (!mounted) return;
+      }
+      await intervention.startWithSeverity(severity);
     }
     if (!mounted) return;
     Navigator.pushNamed(context, AppRoutes.selfRegulation);

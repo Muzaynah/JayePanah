@@ -51,7 +51,9 @@ class _CommunicationScreenState extends State<CommunicationScreen> {
     final phase = CalmPalette.helper(context);
     final step = _steps[_step];
 
-    return Scaffold(
+    return PopScope(
+      canPop: false,
+      child: Scaffold(
       body: Container(
         decoration: BoxDecoration(gradient: phase.backgroundGradient),
         child: Stack(
@@ -163,6 +165,7 @@ class _CommunicationScreenState extends State<CommunicationScreen> {
             ),
           ],
         ),
+      ),
       ),
     );
   }

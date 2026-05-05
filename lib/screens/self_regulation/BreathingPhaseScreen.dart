@@ -206,7 +206,9 @@ class _BreathingPhaseScreenState extends State<BreathingPhaseScreen>
     final exhaleAltColor =
         Color.lerp(phase.textSecondary, Colors.black, isDark ? 0.32 : 0.12)!;
 
-    return Scaffold(
+    return PopScope(
+      canPop: false,
+      child: Scaffold(
       body: Container(
         decoration: BoxDecoration(gradient: phase.backgroundGradient),
         child: SafeArea(
@@ -372,6 +374,7 @@ class _BreathingPhaseScreenState extends State<BreathingPhaseScreen>
             ],
           ),
         ),
+      ),
       ),
     );
   }

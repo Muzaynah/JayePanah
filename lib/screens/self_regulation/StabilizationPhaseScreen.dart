@@ -49,7 +49,9 @@ class _StabilizationPhaseScreenState extends State<StabilizationPhaseScreen>
     final reduceMotion = context.watch<AppSettingsProvider>().reduceMotion;
     final phase = CalmPalette.crisis(context);
 
-    return Scaffold(
+    return PopScope(
+      canPop: false,
+      child: Scaffold(
       body: Container(
         decoration: BoxDecoration(gradient: phase.backgroundGradient),
         child: Stack(
@@ -123,6 +125,7 @@ class _StabilizationPhaseScreenState extends State<StabilizationPhaseScreen>
             ),
           ],
         ),
+      ),
       ),
     );
   }
