@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:google_fonts/google_fonts.dart';
 import '../../providers/LanguageProvider.dart';
 import '../../providers/InterventionStateProvider.dart';
 import '../../routes/app_routes.dart';
-import '../../theme/calm_palette.dart';
-import '../../widgets/bilingual_line.dart';
+import '../../theme/app_theme.dart';
+import '../../widgets/glass_card.dart';
 import '../../components/EmergencyModal.dart';
-import '../../components/crisis_home_button.dart';
 
 class RecoveryPhaseScreen extends StatefulWidget {
   const RecoveryPhaseScreen({super.key});
@@ -16,17 +16,15 @@ class RecoveryPhaseScreen extends StatefulWidget {
 }
 
 class _RecoveryPhaseScreenState extends State<RecoveryPhaseScreen> {
-  bool _showMoreOptions = false;
-
   void _handleBetter() {
-    final interventionState = Provider.of<InterventionStateProvider>(context, listen: false);
+    final interventionState = context.read<InterventionStateProvider>();
     interventionState.setRecoveryResponse('better');
     interventionState.resetIntervention();
     Navigator.pushNamedAndRemoveUntil(context, AppRoutes.home, (route) => false);
   }
 
   void _handleSame() {
-    final interventionState = Provider.of<InterventionStateProvider>(context, listen: false);
+    final interventionState = context.read<InterventionStateProvider>();
     interventionState.setRecoveryResponse('same');
     interventionState.setSelfRegulationPhase(SelfRegulationPhase.grounding);
     interventionState.setGroundingStep(0);
@@ -38,180 +36,140 @@ class _RecoveryPhaseScreenState extends State<RecoveryPhaseScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final languageProvider = Provider.of<LanguageProvider>(context);
-    final isRTL = languageProvider.isRTL;
-    final phase = CalmPalette.recovery(context);
+    final lang = context.read<LanguageProvider>();
 
     return PopScope(
       canPop: false,
       child: Scaffold(
-        body: Container(
-        decoration: BoxDecoration(gradient: phase.backgroundGradient),
-        child: Stack(
+        backgroundColor: DesignSystem.backgroundBase,
+        body: Stack(
           children: [
+            // Background blobs
+            BackgroundBlob(
+              top: -60,
+              left: -80,
+              width: 280,
+              height: 280,
+              color: DesignSystem.glassSage,
+              opacity: 0.35,
+            ),
+            BackgroundBlob(
+              bottom: 80,
+              right: -60,
+              width: 240,
+              height: 240,
+              color: DesignSystem.glassLavender,
+              opacity: 0.30,
+            ),
+            // Main content
             SafeArea(
-              child: Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 28, vertical: 24),
+              child: SingleChildScrollView(
+                padding: const EdgeInsets.all(DesignSystem.spaceLG),
                 child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
-                    Expanded(
-                      child: Center(
-                        child: Column(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            BilingualLine(
-                              translationKey: 'self.recovery.question',
-                              primaryStyle: TextStyle(
-                                fontSize: 28,
-                                color: phase.textPrimary,
-                                fontWeight: FontWeight.w400,
-                                height: 1.3,
-                              ),
-                              secondaryStyle: TextStyle(
-                                fontSize: 17,
-                                color: phase.textSecondary,
-                                height: 1.45,
-                              ),
-                            ),
-                            const SizedBox(height: 40),
-                            _RecoveryPrimaryButton(
-                              label: languageProvider.t('self.recovery.better'),
-                              onTap: _handleBetter,
-                              phase: phase,
-                              isRTL: isRTL,
-                              emphasize: true,
-                            ),
-                            if (!_showMoreOptions) ...[
-                              const SizedBox(height: 20),
-                              TextButton(
-                                onPressed: () => setState(() => _showMoreOptions = true),
-                                style: TextButton.styleFrom(
-                                  minimumSize: const Size(48, 48),
-                                  foregroundColor: phase.textSecondary,
-                                ),
-                                child: Text(
-                                  languageProvider.t('self.recovery.other'),
-                                  style: const TextStyle(fontSize: 17, decoration: TextDecoration.underline),
-                                  textDirection: isRTL ? TextDirection.rtl : TextDirection.ltr,
-                                ),
-                              ),
-                            ],
-                            if (_showMoreOptions) ...[
-                              const SizedBox(height: 28),
-                              _RecoveryPrimaryButton(
-                                label: languageProvider.t('self.recovery.same'),
-                                onTap: _handleSame,
-                                phase: phase,
-                                isRTL: isRTL,
-                                emphasize: false,
-                              ),
-                              const SizedBox(height: 16),
-                              _RecoveryPrimaryButton(
-                                label: languageProvider.t('self.recovery.worse'),
-                                onTap: _handleWorse,
-                                phase: phase,
-                                isRTL: isRTL,
-                                emphasize: false,
-                                outline: true,
-                              ),
-                            ],
-                          ],
-                        ),
+                    // Header
+                    Text(
+                      lang.t('self.recovery.question'),
+                      style: GoogleFonts.dmSerifDisplay(
+                        fontSize: 28,
+                        fontWeight: FontWeight.w400,
+                        color: DesignSystem.textPrimary,
+                        height: 1.3,
                       ),
+                      textAlign: TextAlign.center,
                     ),
-                    const SizedBox(height: 12),
-                    SizedBox(
-                      width: double.infinity,
-                      height: 56,
-                      child: OutlinedButton(
-                        onPressed: () => EmergencyModal.show(context),
-                        style: OutlinedButton.styleFrom(
-                          foregroundColor: phase.textPrimary,
-                          side: BorderSide(color: phase.secondary.withCalmAlpha(0.55), width: 1.5),
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(16),
-                          ),
-                        ),
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            Icon(Icons.phone_in_talk_rounded, color: phase.accent, size: 24),
-                            const SizedBox(width: 12),
-                            Text(
-                              languageProvider.t('home.emergency'),
-                              style: const TextStyle(fontSize: 17, fontWeight: FontWeight.w600),
-                              textDirection: isRTL ? TextDirection.rtl : TextDirection.ltr,
-                            ),
-                          ],
-                        ),
-                      ),
+                    const SizedBox(height: DesignSystem.spaceXXL),
+                    // Recovery options - all visible at once
+                    // Better option - Green
+                    _RecoveryOptionCard(
+                      label: lang.t('self.recovery.better'),
+                      icon: Icons.check_circle_outline_rounded,
+                      color: DesignSystem.accentSage,
+                      backgroundColor: DesignSystem.glassSage,
+                      onTap: _handleBetter,
+                    ),
+                    const SizedBox(height: DesignSystem.spaceLG),
+                    // Same option - Neutral
+                    _RecoveryOptionCard(
+                      label: lang.t('self.recovery.same'),
+                      icon: Icons.pause_circle_outline_rounded,
+                      color: DesignSystem.textSecondary,
+                      backgroundColor: DesignSystem.glassMist,
+                      onTap: _handleSame,
+                    ),
+                    const SizedBox(height: DesignSystem.spaceLG),
+                    // Worse option - Red
+                    _RecoveryOptionCard(
+                      label: lang.t('self.recovery.worse'),
+                      icon: Icons.warning_amber_outlined,
+                      color: const Color(0xFFD4635F),
+                      backgroundColor: const Color(0xFFFFEAEA),
+                      onTap: _handleWorse,
                     ),
                   ],
                 ),
               ),
             ),
-            CrisisHomeButton(
-              backgroundColor: phase.surface,
-              iconColor: phase.textPrimary,
-              borderColor: phase.textSecondary.withCalmAlpha(0.28),
-            ),
           ],
         ),
-      ),
       ),
     );
   }
 }
 
-class _RecoveryPrimaryButton extends StatelessWidget {
+class _RecoveryOptionCard extends StatelessWidget {
   final String label;
+  final IconData icon;
+  final Color color;
+  final Color backgroundColor;
   final VoidCallback onTap;
-  final CalmPhase phase;
-  final bool isRTL;
-  final bool emphasize;
-  final bool outline;
 
-  const _RecoveryPrimaryButton({
+  const _RecoveryOptionCard({
     required this.label,
+    required this.icon,
+    required this.color,
+    required this.backgroundColor,
     required this.onTap,
-    required this.phase,
-    required this.isRTL,
-    this.emphasize = false,
-    this.outline = false,
   });
 
   @override
   Widget build(BuildContext context) {
-    final fill = emphasize ? phase.ctaBackground : phase.surface;
-    final fg = emphasize ? phase.ctaForeground : phase.textPrimary;
-    final border = outline ? phase.secondary.withCalmAlpha(0.6) : Colors.transparent;
-
-    return Material(
-      color: outline ? Colors.transparent : fill,
-      borderRadius: BorderRadius.circular(18),
-      child: InkWell(
-        onTap: onTap,
-        borderRadius: BorderRadius.circular(18),
-        child: Container(
-          width: double.infinity,
-          constraints: const BoxConstraints(minHeight: 56),
-          padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 18),
-          decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(18),
-            border: Border.all(color: border, width: outline ? 1.5 : 0),
-            color: outline ? phase.surface : null,
-          ),
-          child: Text(
-            label,
-            style: TextStyle(
-              fontSize: emphasize ? 20 : 18,
-              color: fg,
-              fontWeight: emphasize ? FontWeight.w600 : FontWeight.w500,
+    return GlassCard(
+      tintColor: backgroundColor,
+      tintOpacity: 0.22,
+      onTap: onTap,
+      child: Row(
+        children: [
+          Container(
+            width: 64,
+            height: 64,
+            decoration: BoxDecoration(
+              shape: BoxShape.circle,
+              color: backgroundColor.withValues(alpha: 0.4),
             ),
-            textAlign: TextAlign.center,
-            textDirection: isRTL ? TextDirection.rtl : TextDirection.ltr,
+            child: Icon(
+              icon,
+              color: color,
+              size: 32,
+            ),
           ),
-        ),
+          const SizedBox(width: DesignSystem.spaceMD),
+          Expanded(
+            child: Text(
+              label,
+              style: GoogleFonts.nunito(
+                fontSize: 18,
+                fontWeight: FontWeight.w600,
+                color: DesignSystem.textPrimary,
+              ),
+            ),
+          ),
+          Icon(
+            Icons.chevron_right,
+            color: color,
+          ),
+        ],
       ),
     );
   }

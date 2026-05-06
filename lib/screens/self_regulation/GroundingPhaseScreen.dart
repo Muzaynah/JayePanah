@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:google_fonts/google_fonts.dart';
 import '../../providers/LanguageProvider.dart';
 import '../../providers/InterventionStateProvider.dart';
-import '../../theme/calm_palette.dart';
-import '../../widgets/bilingual_line.dart';
-import '../../components/crisis_home_button.dart';
+import '../../theme/app_theme.dart';
+import '../../widgets/glass_card.dart';
 
 const _groundingSteps = [
   {'key': 'see', 'icon': Icons.remove_red_eye_rounded, 'instruction': 'self.grounding.see'},
@@ -14,114 +14,195 @@ const _groundingSteps = [
   {'key': 'taste', 'icon': Icons.restaurant_rounded, 'instruction': 'self.grounding.taste'},
 ];
 
-class GroundingPhaseScreen extends StatelessWidget {
+class GroundingPhaseScreen extends StatefulWidget {
   final int currentStep;
 
   const GroundingPhaseScreen({super.key, required this.currentStep});
 
+  @override
+  State<GroundingPhaseScreen> createState() => _GroundingPhaseScreenState();
+}
+
+class _GroundingPhaseScreenState extends State<GroundingPhaseScreen>
+    with SingleTickerProviderStateMixin {
+  late AnimationController _iconController;
+  late Animation<double> _iconScale;
+
+  @override
+  void initState() {
+    super.initState();
+    _iconController = AnimationController(
+      duration: DesignSystem.durationNormal,
+      vsync: this,
+    );
+    _iconScale = Tween<double>(begin: 0.6, end: 1.0).animate(
+      CurvedAnimation(parent: _iconController, curve: Curves.easeOut),
+    );
+    _iconController.forward();
+  }
+
+  @override
+  void didUpdateWidget(GroundingPhaseScreen oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (oldWidget.currentStep != widget.currentStep) {
+      _iconController.reset();
+      _iconController.forward();
+    }
+  }
+
+  @override
+  void dispose() {
+    _iconController.dispose();
+    super.dispose();
+  }
+
   void _handleNext(BuildContext context) {
-    final interventionState = Provider.of<InterventionStateProvider>(context, listen: false);
-    if (currentStep < _groundingSteps.length - 1) {
-      interventionState.setGroundingStep(currentStep + 1);
+    final interventionState = context.read<InterventionStateProvider>();
+    if (widget.currentStep < _groundingSteps.length - 1) {
+      interventionState.setGroundingStep(widget.currentStep + 1);
     } else {
       interventionState.setSelfRegulationPhase(SelfRegulationPhase.reassurance);
+      Navigator.pop(context);
     }
   }
 
   @override
   Widget build(BuildContext context) {
-    final languageProvider = Provider.of<LanguageProvider>(context);
-    final isRTL = languageProvider.isRTL;
-    final step = _groundingSteps[currentStep];
-    final phase = CalmPalette.regulation(context);
+    final lang = context.read<LanguageProvider>();
+    final step = _groundingSteps[widget.currentStep];
+    final stepNum = widget.currentStep + 1;
 
-    return PopScope(
-      canPop: false,
-      child: Scaffold(
-      body: Container(
-        decoration: BoxDecoration(gradient: phase.backgroundGradient),
-        child: Stack(
-          children: [
-            SafeArea(
-              child: Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 28, vertical: 24),
-                child: Column(
-                  children: [
-                    Expanded(
-                      child: Center(
-                        child: Column(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            Container(
-                              width: 120,
-                              height: 120,
-                              decoration: BoxDecoration(
-                                color: phase.surface,
-                                shape: BoxShape.circle,
-                                border: Border.all(
-                                  color: phase.secondary.withCalmAlpha(0.35),
-                                  width: 1.5,
-                                ),
-                              ),
-                              child: Icon(
-                                step['icon'] as IconData,
-                                size: 56,
-                                color: phase.accent,
-                              ),
-                            ),
-                            const SizedBox(height: 40),
-                            BilingualLine(
-                              translationKey: step['instruction'] as String,
-                              primaryStyle: TextStyle(
-                                fontSize: 26,
-                                color: phase.textPrimary,
-                                fontWeight: FontWeight.w400,
-                                height: 1.3,
-                              ),
-                              secondaryStyle: TextStyle(
-                                fontSize: 17,
-                                color: phase.textSecondary,
-                                height: 1.45,
-                              ),
-                            ),
-                          ],
+    return Scaffold(
+      backgroundColor: DesignSystem.backgroundBase,
+      appBar: AppBar(
+        title: Text(lang.t('self.grounding.continue')),
+        elevation: 0,
+      ),
+      body: Stack(
+        children: [
+          // Background blobs
+          BackgroundBlob(
+            top: -60,
+            left: -80,
+            width: 280,
+            height: 280,
+            color: DesignSystem.glassSage,
+            opacity: 0.35,
+          ),
+          BackgroundBlob(
+            bottom: 80,
+            right: -60,
+            width: 240,
+            height: 240,
+            color: DesignSystem.glassLavender,
+            opacity: 0.30,
+          ),
+          // Main content
+          SafeArea(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                // Step indicator dots
+                Padding(
+                  padding: const EdgeInsets.only(bottom: DesignSystem.spaceXL),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: List.generate(
+                      _groundingSteps.length,
+                      (index) => Padding(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: DesignSystem.spaceSM,
                         ),
-                      ),
-                    ),
-                    SizedBox(
-                      width: double.infinity,
-                      height: 56,
-                      child: FilledButton(
-                        onPressed: () => _handleNext(context),
-                        style: FilledButton.styleFrom(
-                          backgroundColor: phase.ctaBackground,
-                          foregroundColor: phase.ctaForeground,
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(16),
+                        child: Container(
+                          width: 12,
+                          height: 12,
+                          decoration: BoxDecoration(
+                            shape: BoxShape.circle,
+                            color: index == widget.currentStep
+                                ? DesignSystem.accentSage
+                                : DesignSystem.textSecondary.withValues(
+                                    alpha: 0.3),
                           ),
                         ),
-                        child: Text(
-                          currentStep < _groundingSteps.length - 1
-                              ? languageProvider.t('self.grounding.next')
-                              : languageProvider.t('self.grounding.continue'),
-                          style: const TextStyle(fontSize: 19, fontWeight: FontWeight.w600),
-                          textDirection: isRTL ? TextDirection.rtl : TextDirection.ltr,
-                        ),
                       ),
                     ),
-                    const SizedBox(height: 12),
-                  ],
+                  ),
                 ),
-              ),
+                // Animated icon
+                Center(
+                  child: AnimatedBuilder(
+                    animation: _iconScale,
+                    builder: (context, child) {
+                      return Transform.scale(
+                        scale: _iconScale.value,
+                        child: Container(
+                          width: 140,
+                          height: 140,
+                          decoration: BoxDecoration(
+                            shape: BoxShape.circle,
+                            color: DesignSystem.glassLavender
+                                .withValues(alpha: 0.25),
+                          ),
+                          child: Icon(
+                            step['icon'] as IconData,
+                            size: 70,
+                            color: DesignSystem.accentLavender,
+                          ),
+                        ),
+                      );
+                    },
+                  ),
+                ),
+                const SizedBox(height: DesignSystem.spaceXL),
+                // Instruction text
+                GlassCard(
+                  tintColor: DesignSystem.glassLavender,
+                  tintOpacity: 0.20,
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    children: [
+                      Text(
+                        lang.t(step['instruction'] as String),
+                        style: GoogleFonts.dmSerifDisplay(
+                          fontSize: 24,
+                          fontWeight: FontWeight.w400,
+                          color: DesignSystem.textPrimary,
+                          height: 1.4,
+                        ),
+                        textAlign: TextAlign.center,
+                      ),
+                      const SizedBox(height: DesignSystem.spaceMD),
+                      Text(
+                        'Step $stepNum of ${_groundingSteps.length}',
+                        style: GoogleFonts.nunito(
+                          fontSize: 14,
+                          fontWeight: FontWeight.w500,
+                          color: DesignSystem.textSecondary,
+                        ),
+                        textAlign: TextAlign.center,
+                      ),
+                    ],
+                  ),
+                ),
+                const SizedBox(height: DesignSystem.spaceXL),
+                // Next button
+                Padding(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: DesignSystem.spaceLG,
+                  ),
+                  child: ElevatedButton(
+                    onPressed: () => _handleNext(context),
+                    child: Text(
+                      widget.currentStep < _groundingSteps.length - 1
+                          ? lang.t('self.grounding.next')
+                          : lang.t('self.grounding.continue'),
+                    ),
+                  ),
+                ),
+              ],
             ),
-            CrisisHomeButton(
-              backgroundColor: phase.surface,
-              iconColor: phase.textPrimary,
-              borderColor: phase.textSecondary.withCalmAlpha(0.25),
-            ),
-          ],
-        ),
-      ),
+          ),
+        ],
       ),
     );
   }

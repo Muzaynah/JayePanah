@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:google_fonts/google_fonts.dart';
 import '../../providers/LanguageProvider.dart';
 import '../../providers/InterventionStateProvider.dart';
-import '../../theme/calm_palette.dart';
-import '../../widgets/bilingual_line.dart';
-import '../../components/crisis_home_button.dart';
+import '../../theme/app_theme.dart';
+import '../../widgets/glass_card.dart';
 
 const _reassuranceMessages = [
   'self.reassurance.1',
@@ -15,91 +15,172 @@ const _reassuranceMessages = [
   'self.reassurance.6',
 ];
 
-class ReassurancePhaseScreen extends StatelessWidget {
+class ReassurancePhaseScreen extends StatefulWidget {
   final int currentStep;
 
   const ReassurancePhaseScreen({super.key, required this.currentStep});
 
+  @override
+  State<ReassurancePhaseScreen> createState() => _ReassurancePhaseScreenState();
+}
+
+class _ReassurancePhaseScreenState extends State<ReassurancePhaseScreen>
+    with SingleTickerProviderStateMixin {
+  late AnimationController _messageController;
+  late Animation<double> _messageFade;
+
+  @override
+  void initState() {
+    super.initState();
+    _messageController = AnimationController(
+      duration: DesignSystem.durationNormal,
+      vsync: this,
+    );
+    _messageFade = Tween<double>(begin: 0.0, end: 1.0).animate(
+      CurvedAnimation(parent: _messageController, curve: Curves.easeInOut),
+    );
+    _messageController.forward();
+  }
+
+  @override
+  void didUpdateWidget(ReassurancePhaseScreen oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (oldWidget.currentStep != widget.currentStep) {
+      _messageController.reset();
+      _messageController.forward();
+    }
+  }
+
+  @override
+  void dispose() {
+    _messageController.dispose();
+    super.dispose();
+  }
+
   void _handleNext(BuildContext context) {
-    final interventionState = Provider.of<InterventionStateProvider>(context, listen: false);
-    if (currentStep < _reassuranceMessages.length - 1) {
-      interventionState.setReassuranceStep(currentStep + 1);
+    final interventionState = context.read<InterventionStateProvider>();
+    if (widget.currentStep < _reassuranceMessages.length - 1) {
+      interventionState.setReassuranceStep(widget.currentStep + 1);
     } else {
       interventionState.setSelfRegulationPhase(SelfRegulationPhase.recovery);
+      Navigator.pop(context);
     }
   }
 
   @override
   Widget build(BuildContext context) {
-    final languageProvider = Provider.of<LanguageProvider>(context);
-    final isRTL = languageProvider.isRTL;
-    final message = _reassuranceMessages[currentStep];
-    final phase = CalmPalette.regulation(context);
+    final lang = context.read<LanguageProvider>();
+    final message = _reassuranceMessages[widget.currentStep];
+    final stepNum = widget.currentStep + 1;
 
-    return PopScope(
-      canPop: false,
-      child: Scaffold(
-      body: Container(
-        decoration: BoxDecoration(gradient: phase.backgroundGradient),
-        child: Stack(
-          children: [
-            SafeArea(
-              child: Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 28, vertical: 24),
-                child: Column(
-                  children: [
-                    Expanded(
-                      child: Center(
-                        child: BilingualLine(
-                          translationKey: message,
-                          primaryStyle: TextStyle(
-                            fontSize: 28,
-                            color: phase.textPrimary,
-                            fontWeight: FontWeight.w300,
-                            height: 1.45,
-                          ),
-                          secondaryStyle: TextStyle(
-                            fontSize: 17,
-                            color: phase.textSecondary,
-                            height: 1.5,
-                          ),
-                        ),
-                      ),
-                    ),
-                    SizedBox(
-                      width: double.infinity,
-                      height: 56,
-                      child: FilledButton(
-                        onPressed: () => _handleNext(context),
-                        style: FilledButton.styleFrom(
-                          backgroundColor: phase.ctaBackground,
-                          foregroundColor: phase.ctaForeground,
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(16),
-                          ),
-                        ),
-                        child: Text(
-                          currentStep < _reassuranceMessages.length - 1
-                              ? languageProvider.t('self.reassurance.next')
-                              : languageProvider.t('self.reassurance.continue'),
-                          style: const TextStyle(fontSize: 19, fontWeight: FontWeight.w600),
-                          textDirection: isRTL ? TextDirection.rtl : TextDirection.ltr,
-                        ),
-                      ),
-                    ),
-                    const SizedBox(height: 12),
-                  ],
-                ),
-              ),
-            ),
-            CrisisHomeButton(
-              backgroundColor: phase.surface,
-              iconColor: phase.textPrimary,
-              borderColor: phase.textSecondary.withCalmAlpha(0.25),
-            ),
-          ],
-        ),
+    return Scaffold(
+      backgroundColor: DesignSystem.backgroundBase,
+      appBar: AppBar(
+        title: Text(lang.t('self.reassurance.continue')),
+        elevation: 0,
       ),
+      body: Stack(
+        children: [
+          // Background blobs
+          BackgroundBlob(
+            top: -60,
+            left: -80,
+            width: 280,
+            height: 280,
+            color: DesignSystem.glassSage,
+            opacity: 0.35,
+          ),
+          BackgroundBlob(
+            bottom: 80,
+            right: -60,
+            width: 240,
+            height: 240,
+            color: DesignSystem.glassLavender,
+            opacity: 0.30,
+          ),
+          // Main content
+          SafeArea(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                // Step indicator dots
+                Padding(
+                  padding: const EdgeInsets.only(bottom: DesignSystem.spaceXL),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: List.generate(
+                      _reassuranceMessages.length,
+                      (index) => Padding(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: DesignSystem.spaceSM,
+                        ),
+                        child: Container(
+                          width: 12,
+                          height: 12,
+                          decoration: BoxDecoration(
+                            shape: BoxShape.circle,
+                            color: index == widget.currentStep
+                                ? DesignSystem.accentSage
+                                : DesignSystem.textSecondary.withValues(
+                                    alpha: 0.3),
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+                // Reassurance message with fade animation
+                FadeTransition(
+                  opacity: _messageFade,
+                  child: GlassCard(
+                    tintColor: DesignSystem.glassPeach,
+                    tintOpacity: 0.18,
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.stretch,
+                      children: [
+                        Text(
+                          lang.t(message),
+                          style: GoogleFonts.dmSerifDisplay(
+                            fontSize: 26,
+                            fontWeight: FontWeight.w400,
+                            color: DesignSystem.textPrimary,
+                            height: 1.4,
+                          ),
+                          textAlign: TextAlign.center,
+                        ),
+                        const SizedBox(height: DesignSystem.spaceMD),
+                        Text(
+                          'Message ${stepNum} of ${_reassuranceMessages.length}',
+                          style: GoogleFonts.nunito(
+                            fontSize: 14,
+                            fontWeight: FontWeight.w500,
+                            color: DesignSystem.textSecondary,
+                          ),
+                          textAlign: TextAlign.center,
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+                const SizedBox(height: DesignSystem.spaceXL),
+                // Next button
+                Padding(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: DesignSystem.spaceLG,
+                  ),
+                  child: ElevatedButton(
+                    onPressed: () => _handleNext(context),
+                    child: Text(
+                      widget.currentStep < _reassuranceMessages.length - 1
+                          ? lang.t('self.reassurance.next')
+                          : lang.t('self.reassurance.continue'),
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ],
       ),
     );
   }

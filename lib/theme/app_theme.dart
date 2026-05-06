@@ -1,115 +1,294 @@
 import 'package:flutter/material.dart';
-import 'calm_palette.dart';
+import 'package:google_fonts/google_fonts.dart';
+
+class DesignSystem {
+  // LIGHT MODE — Warm, soft, natural
+  static const Color lightBase = Color(0xFFF4F2ED);
+  static const Color lightGradientStart = Color(0xFFF0EEE8);
+  static const Color lightGradientEnd = Color(0xFFEAEDF0);
+  static const Color lightTextPrimary = Color(0xFF2A2A25);
+  static const Color lightTextSecondary = Color(0xFF7C7B72);
+
+  // DARK MODE — Deep night sky feeling
+  static const Color darkBase = Color(0xFF141A18);
+  static const Color darkGradientStart = Color(0xFF141A18);
+  static const Color darkGradientEnd = Color(0xFF111520);
+  static const Color darkTextPrimary = Color(0xFFECEAE0);
+  static const Color darkTextSecondary = Color(0xFF8A9488);
+
+  // Legacy colors (keeping for backward compatibility)
+  static const Color backgroundBase = Color(0xFFF7F6F2);
+  static const Color backgroundSurface = Color(0xFFEFEDE8);
+
+  static const Color glassSage = Color(0xFFA8C5A0);
+  static const Color glassLavender = Color(0xFFB8B0D4);
+  static const Color glassPeach = Color(0xFFE8C4B0);
+  static const Color glassMist = Color(0xFFD4E0DC);
+
+  static const Color textPrimary = Color(0xFF2E2E2E);
+  static const Color textSecondary = Color(0xFF7A7A72);
+  static const Color textOnGlass = Color(0xFF3A3A38);
+
+  static const Color accentSage = Color(0xFF6B9B6B);
+  static const Color accentLavender = Color(0xFF7E74B8);
+
+  // Spacing scale
+  static const double spaceXS = 4.0;
+  static const double spaceSM = 8.0;
+  static const double spaceMD = 16.0;
+  static const double spaceLG = 24.0;
+  static const double spaceXL = 32.0;
+  static const double spaceXXL = 48.0;
+
+  // Border radius scale
+  static const double radiusSM = 12.0;
+  static const double radiusMD = 18.0;
+  static const double radiusLG = 24.0;
+  static const double radiusXL = 32.0;
+  static const double radiusPill = 100.0;
+
+  // Animation durations
+  static const Duration durationFast = Duration(milliseconds: 200);
+  static const Duration durationNormal = Duration(milliseconds: 400);
+  static const Duration durationSlow = Duration(milliseconds: 700);
+}
 
 class AppTheme {
   static ThemeData get lightTheme {
-    const surface = Color(0xFFF7F4EE);
-    const onSurface = Color(0xFF2A2418);
     return ThemeData(
       useMaterial3: true,
       brightness: Brightness.light,
       colorScheme: ColorScheme.light(
-        primary: CalmPalette.lightCalmBlue,
+        primary: DesignSystem.accentSage,
         onPrimary: Colors.white,
-        secondary: CalmPalette.lightMidBlue,
+        secondary: DesignSystem.accentLavender,
         onSecondary: Colors.white,
-        surface: surface,
-        onSurface: onSurface,
-        error: const Color(0xFF5C5346),
+        surface: DesignSystem.backgroundBase,
+        onSurface: DesignSystem.textPrimary,
+        error: const Color(0xFFD4635F),
         onError: Colors.white,
-        outline: CalmPalette.lightWarmMid,
+        outline: DesignSystem.textSecondary,
+        outlineVariant: DesignSystem.textSecondary.withOpacity(0.3),
+        surfaceContainer: DesignSystem.backgroundSurface,
+        surfaceContainerHigh: DesignSystem.glassMist.withOpacity(0.25),
       ),
-      scaffoldBackgroundColor: surface,
-      appBarTheme: const AppBarTheme(
+      scaffoldBackgroundColor: DesignSystem.backgroundBase,
+      appBarTheme: AppBarTheme(
         elevation: 0,
         centerTitle: false,
-        backgroundColor: CalmPalette.lightCalmBlue,
+        backgroundColor: DesignSystem.accentSage,
         foregroundColor: Colors.white,
+        titleTextStyle: GoogleFonts.dmSerifDisplay(
+          fontSize: 22,
+          fontWeight: FontWeight.w400,
+          color: Colors.white,
+        ),
       ),
       filledButtonTheme: FilledButtonThemeData(
-        style: FilledButton.styleFrom(
-          minimumSize: const Size(64, 52),
-          padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+        style: ElevatedButton.styleFrom(
+          backgroundColor: DesignSystem.accentSage,
+          foregroundColor: Colors.white,
+          minimumSize: const Size(double.infinity, 56),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(DesignSystem.radiusMD),
+          ),
+          elevation: 0,
+          shadowColor: Colors.transparent,
+        ).copyWith(
+          overlayColor: MaterialStateProperty.all(
+            Colors.white.withOpacity(0.15),
+          ),
         ),
       ),
       elevatedButtonTheme: ElevatedButtonThemeData(
         style: ElevatedButton.styleFrom(
-          minimumSize: const Size(64, 52),
-          padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+          backgroundColor: DesignSystem.accentSage,
+          foregroundColor: Colors.white,
+          minimumSize: const Size(double.infinity, 56),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(DesignSystem.radiusMD),
+          ),
+          elevation: 0,
+          shadowColor: Colors.transparent,
+        ).copyWith(
+          overlayColor: MaterialStateProperty.all(
+            Colors.white.withOpacity(0.15),
+          ),
         ),
       ),
       outlinedButtonTheme: OutlinedButtonThemeData(
         style: OutlinedButton.styleFrom(
-          minimumSize: const Size(64, 52),
-          padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+          foregroundColor: DesignSystem.accentSage,
+          minimumSize: const Size(double.infinity, 52),
+          side: BorderSide(
+            color: DesignSystem.accentSage.withOpacity(0.5),
+            width: 1.5,
+          ),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(DesignSystem.radiusMD),
+          ),
         ),
       ),
-      textTheme: const TextTheme(
-        headlineLarge: TextStyle(fontSize: 32, fontWeight: FontWeight.w500, height: 1.2),
-        headlineMedium: TextStyle(fontSize: 26, fontWeight: FontWeight.w600, height: 1.25),
-        titleLarge: TextStyle(fontSize: 22, fontWeight: FontWeight.w600, height: 1.3),
-        bodyLarge: TextStyle(fontSize: 18, height: 1.5),
-        bodyMedium: TextStyle(fontSize: 16, height: 1.5),
-        labelLarge: TextStyle(fontSize: 17, fontWeight: FontWeight.w600),
+      textTheme: TextTheme(
+        headlineLarge: GoogleFonts.dmSerifDisplay(
+          fontSize: 28,
+          fontWeight: FontWeight.w400,
+          color: DesignSystem.textPrimary,
+          height: 1.3,
+        ),
+        headlineMedium: GoogleFonts.dmSerifDisplay(
+          fontSize: 22,
+          fontWeight: FontWeight.w400,
+          color: DesignSystem.textPrimary,
+        ),
+        titleLarge: GoogleFonts.nunito(
+          fontSize: 18,
+          fontWeight: FontWeight.w700,
+          color: DesignSystem.textPrimary,
+        ),
+        titleMedium: GoogleFonts.nunito(
+          fontSize: 16,
+          fontWeight: FontWeight.w600,
+          color: DesignSystem.textPrimary,
+        ),
+        bodyLarge: GoogleFonts.nunito(
+          fontSize: 16,
+          fontWeight: FontWeight.w400,
+          color: DesignSystem.textPrimary,
+          height: 1.6,
+        ),
+        bodyMedium: GoogleFonts.nunito(
+          fontSize: 14,
+          fontWeight: FontWeight.w500,
+          color: DesignSystem.textSecondary,
+        ),
+        labelLarge: GoogleFonts.nunito(
+          fontSize: 16,
+          fontWeight: FontWeight.w700,
+          letterSpacing: 0.3,
+          color: Colors.white,
+        ),
       ),
     );
   }
 
   static ThemeData get darkTheme {
-    const surface = Color(0xFF121A22);
-    const onSurface = Color(0xFFE4E9EE);
+    const surfaceDark = Color(0xFF0F0F0F);
+    const onSurfaceDark = Color(0xFFE8E8E8);
+
     return ThemeData(
       useMaterial3: true,
       brightness: Brightness.dark,
       colorScheme: ColorScheme.dark(
-        primary: CalmPalette.darkCalmBlue,
+        primary: DesignSystem.accentSage,
         onPrimary: Colors.white,
-        secondary: CalmPalette.darkMidBlue,
+        secondary: DesignSystem.accentLavender,
         onSecondary: Colors.white,
-        surface: surface,
-        onSurface: onSurface,
-        error: const Color(0xFF8A7A68),
+        surface: surfaceDark,
+        onSurface: onSurfaceDark,
+        error: const Color(0xFFD4635F),
         onError: Colors.white,
-        outline: CalmPalette.darkMidBlue,
+        outline: DesignSystem.textSecondary,
+        outlineVariant: DesignSystem.textSecondary.withOpacity(0.3),
+        surfaceContainer: const Color(0xFF1A1A1A),
+        surfaceContainerHigh: const Color(0xFF2A2A2A),
       ),
-      scaffoldBackgroundColor: surface,
-      appBarTheme: const AppBarTheme(
+      scaffoldBackgroundColor: surfaceDark,
+      appBarTheme: AppBarTheme(
         elevation: 0,
         centerTitle: false,
-        backgroundColor: CalmPalette.darkCrisisBg,
-        foregroundColor: Color(0xFFE8EEF2),
+        backgroundColor: DesignSystem.accentSage,
+        foregroundColor: Colors.white,
+        titleTextStyle: GoogleFonts.dmSerifDisplay(
+          fontSize: 22,
+          fontWeight: FontWeight.w400,
+          color: Colors.white,
+        ),
       ),
       filledButtonTheme: FilledButtonThemeData(
-        style: FilledButton.styleFrom(
-          minimumSize: const Size(64, 52),
-          padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+        style: ElevatedButton.styleFrom(
+          backgroundColor: DesignSystem.accentSage,
+          foregroundColor: Colors.white,
+          minimumSize: const Size(double.infinity, 56),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(DesignSystem.radiusMD),
+          ),
+          elevation: 0,
+          shadowColor: Colors.transparent,
+        ).copyWith(
+          overlayColor: MaterialStateProperty.all(
+            Colors.white.withOpacity(0.15),
+          ),
         ),
       ),
       elevatedButtonTheme: ElevatedButtonThemeData(
         style: ElevatedButton.styleFrom(
-          minimumSize: const Size(64, 52),
-          padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+          backgroundColor: DesignSystem.accentSage,
+          foregroundColor: Colors.white,
+          minimumSize: const Size(double.infinity, 56),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(DesignSystem.radiusMD),
+          ),
+          elevation: 0,
+          shadowColor: Colors.transparent,
+        ).copyWith(
+          overlayColor: MaterialStateProperty.all(
+            Colors.white.withOpacity(0.15),
+          ),
         ),
       ),
       outlinedButtonTheme: OutlinedButtonThemeData(
         style: OutlinedButton.styleFrom(
-          minimumSize: const Size(64, 52),
-          padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+          foregroundColor: DesignSystem.accentSage,
+          minimumSize: const Size(double.infinity, 52),
+          side: BorderSide(
+            color: DesignSystem.accentSage.withOpacity(0.5),
+            width: 1.5,
+          ),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(DesignSystem.radiusMD),
+          ),
         ),
       ),
-      textTheme: const TextTheme(
-        headlineLarge: TextStyle(fontSize: 32, fontWeight: FontWeight.w400, height: 1.2),
-        headlineMedium: TextStyle(fontSize: 26, fontWeight: FontWeight.w500, height: 1.25),
-        titleLarge: TextStyle(fontSize: 22, fontWeight: FontWeight.w500, height: 1.3),
-        bodyLarge: TextStyle(fontSize: 18, height: 1.5),
-        bodyMedium: TextStyle(fontSize: 16, height: 1.5),
-        labelLarge: TextStyle(fontSize: 17, fontWeight: FontWeight.w600),
+      textTheme: TextTheme(
+        headlineLarge: GoogleFonts.dmSerifDisplay(
+          fontSize: 28,
+          fontWeight: FontWeight.w400,
+          color: onSurfaceDark,
+          height: 1.3,
+        ),
+        headlineMedium: GoogleFonts.dmSerifDisplay(
+          fontSize: 22,
+          fontWeight: FontWeight.w400,
+          color: onSurfaceDark,
+        ),
+        titleLarge: GoogleFonts.nunito(
+          fontSize: 18,
+          fontWeight: FontWeight.w700,
+          color: onSurfaceDark,
+        ),
+        titleMedium: GoogleFonts.nunito(
+          fontSize: 16,
+          fontWeight: FontWeight.w600,
+          color: onSurfaceDark,
+        ),
+        bodyLarge: GoogleFonts.nunito(
+          fontSize: 16,
+          fontWeight: FontWeight.w400,
+          color: onSurfaceDark,
+          height: 1.6,
+        ),
+        bodyMedium: GoogleFonts.nunito(
+          fontSize: 14,
+          fontWeight: FontWeight.w500,
+          color: onSurfaceDark.withOpacity(0.7),
+        ),
+        labelLarge: GoogleFonts.nunito(
+          fontSize: 16,
+          fontWeight: FontWeight.w700,
+          letterSpacing: 0.3,
+          color: Colors.white,
+        ),
       ),
     );
   }

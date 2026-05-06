@@ -1,33 +1,34 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:google_fonts/google_fonts.dart';
 import '../../providers/LanguageProvider.dart';
 import '../../providers/InterventionStateProvider.dart';
-import '../../providers/app_settings_provider.dart';
-import '../../theme/calm_palette.dart';
-import '../../widgets/bilingual_line.dart';
-import '../../components/crisis_home_button.dart';
+import '../../theme/app_theme.dart';
+import '../../widgets/glass_card.dart';
 
 class StabilizationPhaseScreen extends StatefulWidget {
   const StabilizationPhaseScreen({super.key});
 
   @override
-  State<StabilizationPhaseScreen> createState() => _StabilizationPhaseScreenState();
+  State<StabilizationPhaseScreen> createState() =>
+      _StabilizationPhaseScreenState();
 }
 
 class _StabilizationPhaseScreenState extends State<StabilizationPhaseScreen>
     with SingleTickerProviderStateMixin {
   late AnimationController _ringController;
-  late Animation<double> _gentleScale;
+  late Animation<double> _ringScale;
 
   @override
   void initState() {
     super.initState();
     _ringController = AnimationController(
-      duration: const Duration(seconds: 14),
+      duration: const Duration(seconds: 3),
       vsync: this,
     )..repeat(reverse: true);
-    _gentleScale = Tween<double>(begin: 0.96, end: 1.04).animate(
-      CurvedAnimation(parent: _ringController, curve: Curves.easeInOutCubic),
+
+    _ringScale = Tween<double>(begin: 0.8, end: 1.0).animate(
+      CurvedAnimation(parent: _ringController, curve: Curves.easeInOut),
     );
   }
 
@@ -38,141 +39,129 @@ class _StabilizationPhaseScreenState extends State<StabilizationPhaseScreen>
   }
 
   void _handleStart() {
-    final interventionState = Provider.of<InterventionStateProvider>(context, listen: false);
-    interventionState.setSelfRegulationPhase(SelfRegulationPhase.breathing);
+    context
+        .read<InterventionStateProvider>()
+        .setSelfRegulationPhase(SelfRegulationPhase.breathing);
   }
 
   @override
   Widget build(BuildContext context) {
-    final languageProvider = Provider.of<LanguageProvider>(context);
-    final isRTL = languageProvider.isRTL;
-    final reduceMotion = context.watch<AppSettingsProvider>().reduceMotion;
-    final phase = CalmPalette.crisis(context);
+    final lang = context.read<LanguageProvider>();
 
-    return PopScope(
-      canPop: false,
-      child: Scaffold(
-      body: Container(
-        decoration: BoxDecoration(gradient: phase.backgroundGradient),
-        child: Stack(
-          children: [
-            SafeArea(
-              child: Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 28, vertical: 24),
-                child: Column(
-                  children: [
-                    Expanded(
-                      child: Center(
-                        child: AnimatedBuilder(
-                          animation: _gentleScale,
-                          builder: (context, child) {
-                            final scale = reduceMotion ? 1.0 : _gentleScale.value;
-                            return Transform.scale(
-                              scale: scale,
-                              child: _BreathHalo(
-                                outer: phase.accent.withCalmAlpha(0.22),
-                                mid: phase.secondary.withCalmAlpha(0.35),
-                                inner: phase.accent.withCalmAlpha(0.12),
-                              ),
-                            );
-                          },
-                        ),
-                      ),
-                    ),
-                    BilingualLine(
-                      translationKey: 'self.stabilization.title',
-                      primaryStyle: TextStyle(
-                        fontSize: 30,
-                        color: phase.textPrimary,
-                        fontWeight: FontWeight.w400,
-                        height: 1.2,
-                      ),
-                      secondaryStyle: TextStyle(
-                        fontSize: 17,
-                        color: phase.textSecondary,
-                        height: 1.45,
-                      ),
-                    ),
-                    const SizedBox(height: 40),
-                    SizedBox(
-                      width: double.infinity,
-                      height: 56,
-                      child: FilledButton(
-                        onPressed: _handleStart,
-                        style: FilledButton.styleFrom(
-                          backgroundColor: phase.ctaBackground,
-                          foregroundColor: phase.ctaForeground,
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(16),
-                          ),
-                        ),
-                        child: Text(
-                          languageProvider.t('self.stabilization.start'),
-                          style: const TextStyle(fontSize: 19, fontWeight: FontWeight.w600),
-                          textDirection: isRTL ? TextDirection.rtl : TextDirection.ltr,
-                        ),
-                      ),
-                    ),
-                    const SizedBox(height: 16),
-                  ],
-                ),
-              ),
-            ),
-            CrisisHomeButton(
-              backgroundColor: phase.surface,
-              iconColor: phase.textPrimary,
-              borderColor: phase.textSecondary.withCalmAlpha(0.25),
-            ),
-          ],
-        ),
+    return Scaffold(
+      backgroundColor: DesignSystem.backgroundBase,
+      appBar: AppBar(
+        title: Text(lang.t('self.stabilization.title')),
+        elevation: 0,
       ),
-      ),
-    );
-  }
-}
-
-class _BreathHalo extends StatelessWidget {
-  final Color outer;
-  final Color mid;
-  final Color inner;
-
-  const _BreathHalo({
-    required this.outer,
-    required this.mid,
-    required this.inner,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return SizedBox(
-      width: 220,
-      height: 220,
-      child: Stack(
-        alignment: Alignment.center,
+      body: Stack(
         children: [
-          Container(
-            width: 220,
-            height: 220,
-            decoration: BoxDecoration(
-              shape: BoxShape.circle,
-              color: outer,
-            ),
+          // Background blobs
+          BackgroundBlob(
+            top: -60,
+            left: -80,
+            width: 280,
+            height: 280,
+            color: DesignSystem.glassSage,
+            opacity: 0.35,
           ),
-          Container(
-            width: 168,
-            height: 168,
-            decoration: BoxDecoration(
-              shape: BoxShape.circle,
-              color: mid.withCalmAlpha(0.25),
-              border: Border.all(color: mid.withCalmAlpha(0.4), width: 1.5),
-            ),
+          BackgroundBlob(
+            bottom: 80,
+            right: -60,
+            width: 240,
+            height: 240,
+            color: DesignSystem.glassLavender,
+            opacity: 0.30,
           ),
-          Container(
-            width: 112,
-            height: 112,
-            decoration: BoxDecoration(
-              shape: BoxShape.circle,
-              color: inner,
+          // Main content
+          Center(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                // Animated rings
+                AnimatedBuilder(
+                  animation: _ringScale,
+                  builder: (context, child) {
+                    return Transform.scale(
+                      scale: _ringScale.value,
+                      child: Stack(
+                        alignment: Alignment.center,
+                        children: [
+                          // Outer ring
+                          Container(
+                            width: 240,
+                            height: 240,
+                            decoration: BoxDecoration(
+                              shape: BoxShape.circle,
+                              border: Border.all(
+                                color: DesignSystem.glassSage
+                                    .withValues(alpha: 0.3),
+                                width: 2,
+                              ),
+                            ),
+                          ),
+                          // Middle ring
+                          Container(
+                            width: 180,
+                            height: 180,
+                            decoration: BoxDecoration(
+                              shape: BoxShape.circle,
+                              border: Border.all(
+                                color: DesignSystem.glassLavender
+                                    .withValues(alpha: 0.3),
+                                width: 2,
+                              ),
+                            ),
+                          ),
+                          // Center circle with icon
+                          Container(
+                            width: 120,
+                            height: 120,
+                            decoration: BoxDecoration(
+                              shape: BoxShape.circle,
+                              color: DesignSystem.glassSage
+                                  .withValues(alpha: 0.3),
+                            ),
+                            child: const Icon(
+                              Icons.favorite_rounded,
+                              size: 60,
+                              color: DesignSystem.accentSage,
+                            ),
+                          ),
+                        ],
+                      ),
+                    );
+                  },
+                ),
+                const SizedBox(height: 60),
+                // Subtitle
+                Padding(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: DesignSystem.spaceLG,
+                  ),
+                  child: Text(
+                    lang.t('self.stabilization.subtitle'),
+                    style: GoogleFonts.nunito(
+                      fontSize: 18,
+                      fontWeight: FontWeight.w400,
+                      color: DesignSystem.textSecondary,
+                      height: 1.5,
+                    ),
+                    textAlign: TextAlign.center,
+                  ),
+                ),
+                const SizedBox(height: DesignSystem.spaceXXL),
+                // Continue button
+                Padding(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: DesignSystem.spaceLG,
+                  ),
+                  child: ElevatedButton(
+                    onPressed: _handleStart,
+                    child: Text(lang.t('self.stabilization.start')),
+                  ),
+                ),
+              ],
             ),
           ),
         ],

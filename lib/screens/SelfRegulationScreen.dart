@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../providers/InterventionStateProvider.dart';
+import '../components/EmergencyModal.dart';
+import 'AnchorModeScreen.dart';
 import 'self_regulation/StabilizationPhaseScreen.dart';
 import 'self_regulation/BreathingPhaseScreen.dart';
 import 'self_regulation/GroundingPhaseScreen.dart';
@@ -20,9 +22,34 @@ class _SelfRegulationScreenState extends State<SelfRegulationScreen> with Widget
     super.initState();
     WidgetsBinding.instance.addObserver(this);
     final interventionState = Provider.of<InterventionStateProvider>(context, listen: false);
-    if (interventionState.selfRegulationPhase == null) {
+
+    // Handle severity-based initial routing
+    if (interventionState.selfRegulationPhase == null && interventionState.severityLevel != null) {
+      switch (interventionState.severityLevel!) {
+        case SeverityLevel.mild:
+          // Quick reset mode - start with breathing
+          interventionState.setSelfRegulationPhase(SelfRegulationPhase.breathing);
+          break;
+        case SeverityLevel.moderate:
+          // Full flow - start with stabilization
+          interventionState.setSelfRegulationPhase(SelfRegulationPhase.stabilization);
+          break;
+        case SeverityLevel.severe:
+          // Severe - show emergency modal first, then anchor mode
+          WidgetsBinding.instance.addPostFrameCallback((_) {
+            _showSevereEmergencyModal();
+          });
+          interventionState.setSelfRegulationPhase(SelfRegulationPhase.stabilization);
+          break;
+      }
+    } else if (interventionState.selfRegulationPhase == null) {
       interventionState.startSelfRegulation();
     }
+  }
+
+  Future<void> _showSevereEmergencyModal() async {
+    // Show emergency modal for severe cases
+    await EmergencyModal.show(context);
   }
 
   @override
@@ -44,19 +71,39 @@ class _SelfRegulationScreenState extends State<SelfRegulationScreen> with Widget
     return Consumer<InterventionStateProvider>(
       builder: (context, interventionState, child) {
         final phase = interventionState.selfRegulationPhase ?? SelfRegulationPhase.stabilization;
+        final severity = interventionState.severityLevel;
 
+        // Show anchor mode for severe cases
+        if (severity == SeverityLevel.severe && phase == SelfRegulationPhase.stabilization) {
+          return const AnchorModeScreen();
+        }
+
+        Widget phaseWidget;
         switch (phase) {
           case SelfRegulationPhase.stabilization:
-            return const StabilizationPhaseScreen();
+            phaseWidget = const StabilizationPhaseScreen();
+            break;
           case SelfRegulationPhase.breathing:
-            return const BreathingPhaseScreen();
+            phaseWidget = const BreathingPhaseScreen();
+            break;
           case SelfRegulationPhase.grounding:
-            return GroundingPhaseScreen(currentStep: interventionState.groundingStep);
+            phaseWidget = GroundingPhaseScreen(currentStep: interventionState.groundingStep);
+            break;
           case SelfRegulationPhase.reassurance:
-            return ReassurancePhaseScreen(currentStep: interventionState.reassuranceStep);
+            phaseWidget = ReassurancePhaseScreen(currentStep: interventionState.reassuranceStep);
+            break;
           case SelfRegulationPhase.recovery:
-            return const RecoveryPhaseScreen();
+            phaseWidget = const RecoveryPhaseScreen();
+            break;
         }
+
+        return AnimatedSwitcher(
+          duration: const Duration(milliseconds: 400),
+          transitionBuilder: (child, animation) {
+            return FadeTransition(opacity: animation, child: child);
+          },
+          child: phaseWidget,
+        );
       },
     );
   }
