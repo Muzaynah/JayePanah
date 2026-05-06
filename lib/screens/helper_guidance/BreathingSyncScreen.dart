@@ -1,15 +1,10 @@
-import 'dart:ui' show lerpDouble;
-
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import '../../providers/LanguageProvider.dart';
+import 'package:google_fonts/google_fonts.dart';
 import '../../providers/InterventionStateProvider.dart';
-import '../../providers/app_settings_provider.dart';
-import '../../theme/calm_palette.dart';
-import '../../widgets/bilingual_line.dart';
-import '../../components/crisis_home_button.dart';
+import '../../theme/app_theme.dart';
+import '../../widgets/glass_card.dart';
 
-/// Same rhythm as self-regulation: inhale 40% of cycle, exhale 60%.
 class BreathingSyncScreen extends StatefulWidget {
   const BreathingSyncScreen({super.key});
 
@@ -18,143 +13,216 @@ class BreathingSyncScreen extends StatefulWidget {
 }
 
 class _BreathingSyncScreenState extends State<BreathingSyncScreen>
-    with SingleTickerProviderStateMixin {
-  static const _inhaleFraction = 4 / 10;
-
-  late AnimationController _cycle;
-  double _scale = 0.9;
+    with TickerProviderStateMixin {
+  late AnimationController _breathController;
+  late Animation<double> _breathScale;
+  String _phase = 'inhale';
 
   @override
   void initState() {
     super.initState();
-    _cycle = AnimationController(
+    _breathController = AnimationController(
       duration: const Duration(seconds: 10),
       vsync: this,
     )..repeat();
-    _cycle.addListener(_tick);
-    _tick();
+
+    _breathScale = Tween<double>(begin: 0.7, end: 1.0).animate(
+      CurvedAnimation(parent: _breathController, curve: Curves.easeInOut),
+    );
+
+    _breathController.addListener(_updatePhase);
   }
 
-  void _tick() {
-    final v = _cycle.value;
-    double scale;
-    if (v < _inhaleFraction) {
-      final t = Curves.easeInOutCubic.transform(v / _inhaleFraction);
-      scale = lerpDouble(0.82, 1.06, t)!;
+  void _updatePhase() {
+    final progress = _breathController.value;
+    String newPhase = 'inhale';
+    if (progress < 0.4) {
+      newPhase = 'inhale';
+    } else if (progress < 0.5) {
+      newPhase = 'hold';
+    } else if (progress < 0.9) {
+      newPhase = 'exhale';
     } else {
-      final t = Curves.easeInOutCubic.transform((v - _inhaleFraction) / (1 - _inhaleFraction));
-      scale = lerpDouble(1.06, 0.82, t)!;
+      newPhase = 'hold';
     }
-    setState(() => _scale = scale);
+    if (_phase != newPhase) {
+      setState(() => _phase = newPhase);
+    }
   }
 
   @override
   void dispose() {
-    _cycle.removeListener(_tick);
-    _cycle.dispose();
+    _breathController.dispose();
     super.dispose();
-  }
-
-  void _handleNext() {
-    final interventionState = Provider.of<InterventionStateProvider>(context, listen: false);
-    interventionState.setHelperScreen(HelperGuidanceScreen.environmental);
   }
 
   @override
   Widget build(BuildContext context) {
-    final languageProvider = Provider.of<LanguageProvider>(context);
-    final isRTL = languageProvider.isRTL;
-    final reduceMotion = context.watch<AppSettingsProvider>().reduceMotion;
-    final phase = CalmPalette.helper(context);
-    final scale = reduceMotion ? 1.0 : _scale;
+    final isDark = Theme.of(context).brightness == Brightness.dark;
 
     return PopScope(
       canPop: false,
       child: Scaffold(
-      body: Container(
-        decoration: BoxDecoration(gradient: phase.backgroundGradient),
-        child: Stack(
-          children: [
-            SafeArea(
-              child: Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 28, vertical: 24),
-                child: Column(
-                  children: [
-                    BilingualLine(
-                      translationKey: 'helper.breathing.title',
-                      primaryStyle: TextStyle(
-                        fontSize: 24,
-                        color: phase.textPrimary,
-                        fontWeight: FontWeight.w600,
+        backgroundColor: isDark ? DesignSystem.darkBase : DesignSystem.lightBase,
+        body: SceneBackground(
+          child: SafeArea(
+            child: Column(
+              children: [
+                // Header
+                Padding(
+                  padding: const EdgeInsets.all(DesignSystem.spaceLG),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        'Breathing Sync',
+                        style: GoogleFonts.dmSerifDisplay(
+                          fontSize: 28,
+                          fontWeight: FontWeight.w400,
+                          color: isDark
+                              ? DesignSystem.darkTextPrimary
+                              : DesignSystem.lightTextPrimary,
+                        ),
                       ),
-                      secondaryStyle: TextStyle(
-                        fontSize: 17,
-                        color: phase.textSecondary,
-                        height: 1.4,
+                      const SizedBox(height: 8),
+                      Text(
+                        'Sync your breathing with theirs to calm them',
+                        style: GoogleFonts.nunito(
+                          fontSize: 14,
+                          fontWeight: FontWeight.w500,
+                          color: isDark
+                              ? DesignSystem.darkTextSecondary
+                              : DesignSystem.lightTextSecondary,
+                        ),
                       ),
-                    ),
-                    const SizedBox(height: 32),
-                    Expanded(
-                      child: Center(
-                        child: Transform.scale(
-                          scale: scale,
-                          child: Container(
-                            width: 260,
-                            height: 260,
-                            decoration: BoxDecoration(
-                              shape: BoxShape.circle,
-                              border: Border.all(
-                                color: phase.accent.withCalmAlpha(0.45),
-                                width: 2,
-                              ),
-                              color: phase.accent.withCalmAlpha(0.1),
-                            ),
-                            child: Center(
+                    ],
+                  ),
+                ),
+                // Animated breathing orb
+                Expanded(
+                  child: Center(
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        AnimatedBuilder(
+                          animation: _breathScale,
+                          builder: (context, child) {
+                            return Transform.scale(
+                              scale: _breathScale.value,
                               child: Container(
-                                width: 140,
-                                height: 140,
+                                width: 200,
+                                height: 200,
                                 decoration: BoxDecoration(
                                   shape: BoxShape.circle,
-                                  color: phase.accent.withCalmAlpha(0.22),
+                                  gradient: RadialGradient(
+                                    colors: [
+                                      DesignSystem.accentLavender.withValues(alpha: 0.8),
+                                      DesignSystem.accentLavender.withValues(alpha: 0.3),
+                                      Colors.transparent,
+                                    ],
+                                    stops: const [0.0, 0.7, 1.0],
+                                  ),
+                                  boxShadow: [
+                                    BoxShadow(
+                                      color: DesignSystem.accentLavender.withValues(alpha: 0.4),
+                                      blurRadius: 40,
+                                      spreadRadius: 10,
+                                    ),
+                                  ],
                                 ),
                               ),
+                            );
+                          },
+                        ),
+                        const SizedBox(height: 40),
+                        Container(
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: DesignSystem.spaceLG,
+                            vertical: DesignSystem.spaceMD,
+                          ),
+                          decoration: BoxDecoration(
+                            color: DesignSystem.accentLavender.withValues(alpha: 0.2),
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                          child: Text(
+                            _phase.toUpperCase(),
+                            style: GoogleFonts.dmSerifDisplay(
+                              fontSize: 24,
+                              fontWeight: FontWeight.w400,
+                              color: DesignSystem.accentLavender,
+                              letterSpacing: 2,
                             ),
                           ),
                         ),
-                      ),
+                      ],
                     ),
-                    SizedBox(
-                      width: double.infinity,
-                      height: 56,
-                      child: FilledButton(
-                        onPressed: _handleNext,
-                        style: FilledButton.styleFrom(
-                          backgroundColor: phase.ctaBackground,
-                          foregroundColor: phase.ctaForeground,
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(16),
+                  ),
+                ),
+                // Tips card
+                Padding(
+                  padding: const EdgeInsets.all(DesignSystem.spaceLG),
+                  child: GlassCard(
+                    tintColor: DesignSystem.glassLavender,
+                    tintOpacity: 0.20,
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.stretch,
+                      children: [
+                        Text(
+                          'Tips',
+                          style: GoogleFonts.dmSerifDisplay(
+                            fontSize: 18,
+                            fontWeight: FontWeight.w400,
+                            color: isDark
+                                ? DesignSystem.darkTextPrimary
+                                : DesignSystem.lightTextPrimary,
                           ),
                         ),
-                        child: Text(
-                          languageProvider.t('helper.next'),
-                          style: const TextStyle(fontSize: 19, fontWeight: FontWeight.w600),
-                          textDirection: isRTL ? TextDirection.rtl : TextDirection.ltr,
+                        const SizedBox(height: 12),
+                        Text(
+                          '• Breathe slowly and deliberately\n• Maintain eye contact if comfortable\n• Continue for 2-3 minutes\n• Your calm helps them calm',
+                          style: GoogleFonts.nunito(
+                            fontSize: 14,
+                            fontWeight: FontWeight.w400,
+                            color: isDark
+                                ? DesignSystem.darkTextSecondary
+                                : DesignSystem.lightTextSecondary,
+                            height: 1.6,
+                          ),
                         ),
-                      ),
+                      ],
                     ),
-                    const SizedBox(height: 8),
-                  ],
+                  ),
                 ),
-              ),
+                // Buttons
+                Padding(
+                  padding: const EdgeInsets.all(DesignSystem.spaceLG),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    children: [
+                      ElevatedButton(
+                        onPressed: () {
+                          final interventionState = Provider.of<InterventionStateProvider>(
+                            context,
+                            listen: false,
+                          );
+                          interventionState.setHelperScreen(
+                            HelperGuidanceScreen.environmental,
+                          );
+                        },
+                        child: const Text('Continue'),
+                      ),
+                      const SizedBox(height: DesignSystem.spaceMD),
+                      OutlinedButton(
+                        onPressed: () => Navigator.pop(context),
+                        child: const Text('Back to Home'),
+                      ),
+                    ],
+                  ),
+                ),
+              ],
             ),
-            CrisisHomeButton(
-              backgroundColor: phase.surface,
-              iconColor: phase.textPrimary,
-              borderColor: phase.textSecondary.withCalmAlpha(0.25),
-            ),
-          ],
+          ),
         ),
-      ),
       ),
     );
   }

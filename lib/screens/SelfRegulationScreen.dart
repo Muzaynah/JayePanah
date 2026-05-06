@@ -31,8 +31,8 @@ class _SelfRegulationScreenState extends State<SelfRegulationScreen> with Widget
           interventionState.setSelfRegulationPhase(SelfRegulationPhase.breathing);
           break;
         case SeverityLevel.moderate:
-          // Full flow - start with stabilization
-          interventionState.setSelfRegulationPhase(SelfRegulationPhase.stabilization);
+          // Full flow - start with breathing
+          interventionState.setSelfRegulationPhase(SelfRegulationPhase.breathing);
           break;
         case SeverityLevel.severe:
           // Severe - show emergency modal first, then anchor mode

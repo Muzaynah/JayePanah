@@ -1,15 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import '../../providers/LanguageProvider.dart';
+import 'package:google_fonts/google_fonts.dart';
 import '../../providers/InterventionStateProvider.dart';
-import '../../theme/calm_palette.dart';
-import '../../widgets/bilingual_line.dart';
-import '../../components/crisis_home_button.dart';
+import '../../theme/app_theme.dart';
+import '../../widgets/glass_card.dart';
 
-const _steps = [
-  {'icon': Icons.volume_off_rounded, 'key': 'helper.environmental.noise'},
-  {'icon': Icons.people_outline_rounded, 'key': 'helper.environmental.crowd'},
-  {'icon': Icons.chair_rounded, 'key': 'helper.environmental.sit'},
+const _tips = [
+  {'title': 'Lighting', 'icon': Icons.lightbulb_outline, 'hint': 'Dim lights or move to a quiet room'},
+  {'title': 'Temperature', 'icon': Icons.thermostat, 'hint': 'Keep room cool and comfortable'},
+  {'title': 'Sound', 'icon': Icons.volume_off, 'hint': 'Minimize loud noises and distractions'},
+  {'title': 'Space', 'icon': Icons.space_dashboard, 'hint': 'Give them personal space if needed'},
 ];
 
 class EnvironmentalScreen extends StatefulWidget {
@@ -20,122 +20,143 @@ class EnvironmentalScreen extends StatefulWidget {
 }
 
 class _EnvironmentalScreenState extends State<EnvironmentalScreen> {
-  int _step = 0;
-
-  void _handleNext(BuildContext context) {
-    if (_step < _steps.length - 1) {
-      setState(() => _step++);
-    } else {
-      final interventionState = Provider.of<InterventionStateProvider>(context, listen: false);
-      interventionState.setHelperScreen(HelperGuidanceScreen.assessment);
-    }
-  }
-
   @override
   Widget build(BuildContext context) {
-    final languageProvider = Provider.of<LanguageProvider>(context);
-    final isRTL = languageProvider.isRTL;
-    final phase = CalmPalette.helper(context);
-    final item = _steps[_step];
+    final isDark = Theme.of(context).brightness == Brightness.dark;
 
     return PopScope(
       canPop: false,
       child: Scaffold(
-      body: Container(
-        decoration: BoxDecoration(gradient: phase.backgroundGradient),
-        child: Stack(
-          children: [
-            SafeArea(
-              child: Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 28, vertical: 24),
-                child: Column(
-                  children: [
-                    BilingualLine(
-                      translationKey: 'helper.environmental.title',
-                      primaryStyle: TextStyle(
-                        fontSize: 22,
-                        color: phase.textPrimary,
-                        fontWeight: FontWeight.w600,
-                      ),
-                      secondaryStyle: TextStyle(
-                        fontSize: 16,
-                        color: phase.textSecondary,
-                        height: 1.4,
-                      ),
-                    ),
-                    const SizedBox(height: 32),
-                    Expanded(
-                      child: Center(
-                        child: Column(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            Container(
-                              width: 112,
-                              height: 112,
-                              decoration: BoxDecoration(
-                                color: phase.surface,
-                                shape: BoxShape.circle,
-                                border: Border.all(
-                                  color: phase.secondary.withCalmAlpha(0.35),
-                                ),
-                              ),
-                              child: Icon(
-                                item['icon'] as IconData,
-                                size: 52,
-                                color: phase.accent,
-                              ),
-                            ),
-                            const SizedBox(height: 36),
-                            BilingualLine(
-                              translationKey: item['key'] as String,
-                              primaryStyle: TextStyle(
-                                fontSize: 26,
-                                color: phase.textPrimary,
-                                fontWeight: FontWeight.w400,
-                                height: 1.35,
-                              ),
-                              secondaryStyle: TextStyle(
-                                fontSize: 17,
-                                color: phase.textSecondary,
-                                height: 1.45,
-                              ),
-                            ),
-                          ],
+        backgroundColor: isDark ? DesignSystem.darkBase : DesignSystem.lightBase,
+        body: SceneBackground(
+          child: SafeArea(
+            child: Column(
+              children: [
+                // Header
+                Padding(
+                  padding: const EdgeInsets.all(DesignSystem.spaceLG),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        'Environment Matters',
+                        style: GoogleFonts.dmSerifDisplay(
+                          fontSize: 28,
+                          fontWeight: FontWeight.w400,
+                          color: isDark
+                              ? DesignSystem.darkTextPrimary
+                              : DesignSystem.lightTextPrimary,
                         ),
                       ),
-                    ),
-                    SizedBox(
-                      width: double.infinity,
-                      height: 56,
-                      child: FilledButton(
-                        onPressed: () => _handleNext(context),
-                        style: FilledButton.styleFrom(
-                          backgroundColor: phase.ctaBackground,
-                          foregroundColor: phase.ctaForeground,
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(16),
-                          ),
-                        ),
-                        child: Text(
-                          languageProvider.t('helper.next'),
-                          style: const TextStyle(fontSize: 19, fontWeight: FontWeight.w600),
-                          textDirection: isRTL ? TextDirection.rtl : TextDirection.ltr,
+                      const SizedBox(height: 8),
+                      Text(
+                        'Create a calm, safe space',
+                        style: GoogleFonts.nunito(
+                          fontSize: 14,
+                          fontWeight: FontWeight.w500,
+                          color: isDark
+                              ? DesignSystem.darkTextSecondary
+                              : DesignSystem.lightTextSecondary,
                         ),
                       ),
-                    ),
-                    const SizedBox(height: 8),
-                  ],
+                    ],
+                  ),
                 ),
-              ),
+                // Tips grid
+                Expanded(
+                  child: SingleChildScrollView(
+                    padding: const EdgeInsets.symmetric(horizontal: DesignSystem.spaceLG),
+                    child: Column(
+                      children: List.generate(
+                        _tips.length,
+                        (index) {
+                          final tip = _tips[index];
+                          return Padding(
+                            padding: const EdgeInsets.only(bottom: DesignSystem.spaceMD),
+                            child: GlassCard(
+                              tintColor: DesignSystem.glassMist,
+                              tintOpacity: 0.25,
+                              child: Row(
+                                children: [
+                                  Container(
+                                    width: 56,
+                                    height: 56,
+                                    decoration: BoxDecoration(
+                                      shape: BoxShape.circle,
+                                      color: DesignSystem.accentSage.withValues(alpha: 0.15),
+                                    ),
+                                    child: Icon(
+                                      tip['icon'] as IconData,
+                                      size: 28,
+                                      color: DesignSystem.accentSage,
+                                    ),
+                                  ),
+                                  const SizedBox(width: DesignSystem.spaceMD),
+                                  Expanded(
+                                    child: Column(
+                                      crossAxisAlignment: CrossAxisAlignment.start,
+                                      children: [
+                                        Text(
+                                          tip['title'] as String,
+                                          style: GoogleFonts.nunito(
+                                            fontSize: 16,
+                                            fontWeight: FontWeight.w600,
+                                            color: isDark
+                                                ? DesignSystem.darkTextPrimary
+                                                : DesignSystem.lightTextPrimary,
+                                          ),
+                                        ),
+                                        const SizedBox(height: 4),
+                                        Text(
+                                          tip['hint'] as String,
+                                          style: GoogleFonts.nunito(
+                                            fontSize: 13,
+                                            fontWeight: FontWeight.w400,
+                                            color: isDark
+                                                ? DesignSystem.darkTextSecondary
+                                                : DesignSystem.lightTextSecondary,
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          );
+                        },
+                      ),
+                    ),
+                  ),
+                ),
+                // Buttons
+                Padding(
+                  padding: const EdgeInsets.all(DesignSystem.spaceLG),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    children: [
+                      ElevatedButton(
+                        onPressed: () {
+                          final interventionState = Provider.of<InterventionStateProvider>(
+                            context,
+                            listen: false,
+                          );
+                          interventionState.setHelperScreen(HelperGuidanceScreen.escalation);
+                        },
+                        child: const Text('Continue'),
+                      ),
+                      const SizedBox(height: DesignSystem.spaceMD),
+                      OutlinedButton(
+                        onPressed: () => Navigator.pop(context),
+                        child: const Text('Back to Home'),
+                      ),
+                    ],
+                  ),
+                ),
+              ],
             ),
-            CrisisHomeButton(
-              backgroundColor: phase.surface,
-              iconColor: phase.textPrimary,
-              borderColor: phase.textSecondary.withCalmAlpha(0.25),
-            ),
-          ],
+          ),
         ),
-      ),
       ),
     );
   }

@@ -47,34 +47,17 @@ class _StabilizationPhaseScreenState extends State<StabilizationPhaseScreen>
   @override
   Widget build(BuildContext context) {
     final lang = context.read<LanguageProvider>();
+    final isDark = Theme.of(context).brightness == Brightness.dark;
 
     return Scaffold(
-      backgroundColor: DesignSystem.backgroundBase,
+      backgroundColor: isDark ? DesignSystem.darkBase : DesignSystem.lightBase,
       appBar: AppBar(
         title: Text(lang.t('self.stabilization.title')),
         elevation: 0,
       ),
-      body: Stack(
-        children: [
-          // Background blobs
-          BackgroundBlob(
-            top: -60,
-            left: -80,
-            width: 280,
-            height: 280,
-            color: DesignSystem.glassSage,
-            opacity: 0.35,
-          ),
-          BackgroundBlob(
-            bottom: 80,
-            right: -60,
-            width: 240,
-            height: 240,
-            color: DesignSystem.glassLavender,
-            opacity: 0.30,
-          ),
-          // Main content
-          Center(
+      body: SceneBackground(
+        child: SafeArea(
+          child: Center(
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
@@ -144,7 +127,9 @@ class _StabilizationPhaseScreenState extends State<StabilizationPhaseScreen>
                     style: GoogleFonts.nunito(
                       fontSize: 18,
                       fontWeight: FontWeight.w400,
-                      color: DesignSystem.textSecondary,
+                      color: isDark
+                          ? DesignSystem.darkTextSecondary
+                          : DesignSystem.textSecondary,
                       height: 1.5,
                     ),
                     textAlign: TextAlign.center,
@@ -164,7 +149,7 @@ class _StabilizationPhaseScreenState extends State<StabilizationPhaseScreen>
               ],
             ),
           ),
-        ],
+        ),
       ),
     );
   }

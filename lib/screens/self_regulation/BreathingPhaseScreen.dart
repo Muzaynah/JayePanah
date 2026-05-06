@@ -114,38 +114,21 @@ class _BreathingPhaseScreenState extends State<BreathingPhaseScreen>
   @override
   Widget build(BuildContext context) {
     final lang = context.read<LanguageProvider>();
+    final isDark = Theme.of(context).brightness == Brightness.dark;
 
     return Scaffold(
-      backgroundColor: DesignSystem.backgroundBase,
+      backgroundColor: isDark ? DesignSystem.darkBase : DesignSystem.lightBase,
       appBar: AppBar(
         title: Text(lang.t('self.breathing.continue')),
         elevation: 0,
       ),
-      body: Stack(
-        children: [
-          // Background blobs
-          BackgroundBlob(
-            top: -60,
-            left: -80,
-            width: 280,
-            height: 280,
-            color: DesignSystem.glassSage,
-            opacity: 0.35,
-          ),
-          BackgroundBlob(
-            bottom: 80,
-            right: -60,
-            width: 240,
-            height: 240,
-            color: DesignSystem.glassLavender,
-            opacity: 0.30,
-          ),
-          // Main content
-          Center(
+      body: SceneBackground(
+        isBreathingScreen: true,
+        child: SafeArea(
+          child: Center(
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                // Breathing orb
                 AnimatedBuilder(
                   animation: _scaleAnimation,
                   builder: (context, child) {
@@ -166,11 +149,9 @@ class _BreathingPhaseScreenState extends State<BreathingPhaseScreen>
                           ),
                           boxShadow: [
                             BoxShadow(
-                              color: DesignSystem.glassSage
-                                  .withValues(alpha: 0.4),
+                              color: DesignSystem.glassSage.withValues(alpha: 0.4),
                               blurRadius: _scaleAnimation.value > 0.8 ? 60 : 20,
-                              spreadRadius:
-                                  _scaleAnimation.value > 0.8 ? 20 : 5,
+                              spreadRadius: _scaleAnimation.value > 0.8 ? 20 : 5,
                             ),
                           ],
                         ),
@@ -179,17 +160,17 @@ class _BreathingPhaseScreenState extends State<BreathingPhaseScreen>
                   },
                 ),
                 const SizedBox(height: 60),
-                // Instruction text
                 Text(
                   _getInstruction(_currentPhase),
                   style: GoogleFonts.dmSerifDisplay(
                     fontSize: 28,
                     fontWeight: FontWeight.w400,
-                    color: DesignSystem.textPrimary,
+                    color: isDark
+                        ? DesignSystem.darkTextPrimary
+                        : DesignSystem.textPrimary,
                   ),
                 ),
                 const SizedBox(height: 40),
-                // Breath counter
                 GlassCard(
                   tintColor: DesignSystem.glassLavender,
                   tintOpacity: 0.20,
@@ -198,12 +179,13 @@ class _BreathingPhaseScreenState extends State<BreathingPhaseScreen>
                     style: GoogleFonts.nunito(
                       fontSize: 18,
                       fontWeight: FontWeight.w600,
-                      color: DesignSystem.textPrimary,
+                      color: isDark
+                          ? DesignSystem.darkTextPrimary
+                          : DesignSystem.textPrimary,
                     ),
                   ),
                 ),
                 const SizedBox(height: 40),
-                // Pause button
                 FloatingActionButton.extended(
                   onPressed: _togglePause,
                   label: Text(_isPaused ? 'Resume' : 'Pause'),
@@ -211,15 +193,16 @@ class _BreathingPhaseScreenState extends State<BreathingPhaseScreen>
                   backgroundColor: DesignSystem.accentSage,
                 ),
                 const SizedBox(height: 40),
-                // Continue button
                 Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 20),
                   child: ElevatedButton(
                     onPressed: () {
                       context
                           .read<InterventionStateProvider>()
+                          .setGroundingStep(0);
+                      context
+                          .read<InterventionStateProvider>()
                           .setSelfRegulationPhase(SelfRegulationPhase.grounding);
-                      Navigator.pop(context);
                     },
                     child: Text(lang.t('self.breathing.continue')),
                   ),
@@ -227,7 +210,7 @@ class _BreathingPhaseScreenState extends State<BreathingPhaseScreen>
               ],
             ),
           ),
-        ],
+        ),
       ),
     );
   }

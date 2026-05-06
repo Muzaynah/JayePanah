@@ -54,54 +54,35 @@ class EducationScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final lang = context.read<LanguageProvider>();
+    final isDark = Theme.of(context).brightness == Brightness.dark;
 
     return Scaffold(
-      backgroundColor: DesignSystem.backgroundBase,
+      backgroundColor: isDark ? DesignSystem.darkBase : DesignSystem.lightBase,
       appBar: AppBar(
         title: Text(lang.t('education.title')),
         elevation: 0,
       ),
-      body: Stack(
-        children: [
-          // Background blobs
-          BackgroundBlob(
-            top: -60,
-            left: -80,
-            width: 280,
-            height: 280,
-            color: DesignSystem.glassSage,
-            opacity: 0.35,
-          ),
-          BackgroundBlob(
-            bottom: 80,
-            right: -60,
-            width: 240,
-            height: 240,
-            color: DesignSystem.glassLavender,
-            opacity: 0.30,
-          ),
-          // Main content
-          SafeArea(
-            child: SingleChildScrollView(
-              padding: const EdgeInsets.all(24),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.stretch,
-                children: [
-                  ..._educationSections.map(
-                    (section) => Padding(
-                      padding: const EdgeInsets.only(bottom: 16),
-                      child: _EducationCard(
-                        sectionKey: section['key'] as String,
-                        icon: section['icon'] as IconData,
-                        lang: lang,
-                      ),
+      body: SceneBackground(
+        child: SafeArea(
+          child: SingleChildScrollView(
+            padding: const EdgeInsets.all(24),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                ..._educationSections.map(
+                  (section) => Padding(
+                    padding: const EdgeInsets.only(bottom: 16),
+                    child: _EducationCard(
+                      sectionKey: section['key'] as String,
+                      icon: section['icon'] as IconData,
+                      lang: lang,
                     ),
                   ),
-                ],
-              ),
+                ),
+              ],
             ),
           ),
-        ],
+        ),
       ),
     );
   }
@@ -120,6 +101,7 @@ class _EducationCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
     final titleKey = 'education.$sectionKey.title';
     final textKey = 'education.$sectionKey.text';
 
@@ -151,7 +133,9 @@ class _EducationCard extends StatelessWidget {
                   style: GoogleFonts.dmSerifDisplay(
                     fontSize: 20,
                     fontWeight: FontWeight.w400,
-                    color: DesignSystem.textPrimary,
+                    color: isDark
+                        ? DesignSystem.darkTextPrimary
+                        : DesignSystem.textPrimary,
                   ),
                 ),
               ),
@@ -163,7 +147,9 @@ class _EducationCard extends StatelessWidget {
             style: GoogleFonts.nunito(
               fontSize: 14,
               fontWeight: FontWeight.w400,
-              color: DesignSystem.textSecondary,
+              color: isDark
+                  ? DesignSystem.darkTextSecondary
+                  : DesignSystem.textSecondary,
               height: 1.6,
             ),
           ),

@@ -1,16 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import '../../providers/LanguageProvider.dart';
+import 'package:google_fonts/google_fonts.dart';
 import '../../providers/InterventionStateProvider.dart';
-import '../../theme/calm_palette.dart';
-import '../../widgets/bilingual_line.dart';
-import '../../components/crisis_home_button.dart';
-
-const _steps = [
-  'helper.assessment.speak',
-  'helper.assessment.breathe',
-  'helper.assessment.reducing',
-];
+import '../../theme/app_theme.dart';
+import '../../widgets/glass_card.dart';
 
 class AssessmentScreen extends StatefulWidget {
   const AssessmentScreen({super.key});
@@ -20,101 +13,154 @@ class AssessmentScreen extends StatefulWidget {
 }
 
 class _AssessmentScreenState extends State<AssessmentScreen> {
-  int _step = 0;
-
-  void _handleNext() {
-    if (_step < _steps.length - 1) {
-      setState(() => _step++);
-    } else {
-      final interventionState = Provider.of<InterventionStateProvider>(context, listen: false);
-      interventionState.setHelperScreen(HelperGuidanceScreen.escalation);
-    }
-  }
+  int _severity = 1;
 
   @override
   Widget build(BuildContext context) {
-    final languageProvider = Provider.of<LanguageProvider>(context);
-    final isRTL = languageProvider.isRTL;
-    final phase = CalmPalette.helper(context);
-    final key = _steps[_step];
+    final isDark = Theme.of(context).brightness == Brightness.dark;
 
     return PopScope(
       canPop: false,
       child: Scaffold(
-      body: Container(
-        decoration: BoxDecoration(gradient: phase.backgroundGradient),
-        child: Stack(
-          children: [
-            SafeArea(
-              child: Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 28, vertical: 24),
-                child: Column(
-                  children: [
-                    BilingualLine(
-                      translationKey: 'helper.assessment.title',
-                      primaryStyle: TextStyle(
-                        fontSize: 22,
-                        color: phase.textPrimary,
-                        fontWeight: FontWeight.w600,
-                      ),
-                      secondaryStyle: TextStyle(
-                        fontSize: 16,
-                        color: phase.textSecondary,
-                        height: 1.4,
-                      ),
-                    ),
-                    const SizedBox(height: 40),
-                    Expanded(
-                      child: Center(
-                        child: BilingualLine(
-                          translationKey: key,
-                          primaryStyle: TextStyle(
-                            fontSize: 28,
-                            color: phase.textPrimary,
-                            fontWeight: FontWeight.w400,
-                            height: 1.4,
-                          ),
-                          secondaryStyle: TextStyle(
-                            fontSize: 17,
-                            color: phase.textSecondary,
-                            height: 1.5,
-                          ),
+        backgroundColor: isDark ? DesignSystem.darkBase : DesignSystem.lightBase,
+        body: SceneBackground(
+          child: SafeArea(
+            child: Column(
+              children: [
+                // Header
+                Padding(
+                  padding: const EdgeInsets.all(DesignSystem.spaceLG),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        'Assess Their State',
+                        style: GoogleFonts.dmSerifDisplay(
+                          fontSize: 28,
+                          fontWeight: FontWeight.w400,
+                          color: isDark
+                              ? DesignSystem.darkTextPrimary
+                              : DesignSystem.lightTextPrimary,
                         ),
                       ),
-                    ),
-                    SizedBox(
-                      width: double.infinity,
-                      height: 56,
-                      child: FilledButton(
-                        onPressed: _handleNext,
-                        style: FilledButton.styleFrom(
-                          backgroundColor: phase.ctaBackground,
-                          foregroundColor: phase.ctaForeground,
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(16),
-                          ),
-                        ),
-                        child: Text(
-                          languageProvider.t('helper.next'),
-                          style: const TextStyle(fontSize: 19, fontWeight: FontWeight.w600),
-                          textDirection: isRTL ? TextDirection.rtl : TextDirection.ltr,
+                      const SizedBox(height: 8),
+                      Text(
+                        'On a scale of 1-10, how anxious are they?',
+                        style: GoogleFonts.nunito(
+                          fontSize: 14,
+                          fontWeight: FontWeight.w500,
+                          color: isDark
+                              ? DesignSystem.darkTextSecondary
+                              : DesignSystem.lightTextSecondary,
                         ),
                       ),
-                    ),
-                    const SizedBox(height: 8),
-                  ],
+                    ],
+                  ),
                 ),
-              ),
+                // Slider
+                Expanded(
+                  child: Center(
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Container(
+                          width: 120,
+                          height: 120,
+                          decoration: BoxDecoration(
+                            shape: BoxShape.circle,
+                            color: _severityColor().withValues(alpha: 0.15),
+                          ),
+                          child: Center(
+                            child: Text(
+                              '$_severity',
+                              style: GoogleFonts.dmSerifDisplay(
+                                fontSize: 56,
+                                fontWeight: FontWeight.w400,
+                                color: _severityColor(),
+                              ),
+                            ),
+                          ),
+                        ),
+                        const SizedBox(height: DesignSystem.spaceXL),
+                        Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: DesignSystem.spaceLG),
+                          child: Slider(
+                            value: _severity.toDouble(),
+                            min: 1,
+                            max: 10,
+                            divisions: 9,
+                            label: '$_severity',
+                            activeColor: _severityColor(),
+                            onChanged: (value) {
+                              setState(() => _severity = value.toInt());
+                            },
+                          ),
+                        ),
+                        const SizedBox(height: DesignSystem.spaceXL),
+                        GlassCard(
+                          tintColor: _severityColor(),
+                          tintOpacity: 0.15,
+                          child: Text(
+                            _severityLabel(),
+                            style: GoogleFonts.nunito(
+                              fontSize: 16,
+                              fontWeight: FontWeight.w500,
+                              color: isDark
+                                  ? DesignSystem.darkTextPrimary
+                                  : DesignSystem.lightTextPrimary,
+                              height: 1.6,
+                            ),
+                            textAlign: TextAlign.center,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+                // Buttons
+                Padding(
+                  padding: const EdgeInsets.all(DesignSystem.spaceLG),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    children: [
+                      ElevatedButton(
+                        onPressed: () {
+                          final interventionState = Provider.of<InterventionStateProvider>(
+                            context,
+                            listen: false,
+                          );
+                          interventionState.setHelperScreen(HelperGuidanceScreen.escalation);
+                        },
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: _severityColor(),
+                        ),
+                        child: const Text('Continue'),
+                      ),
+                      const SizedBox(height: DesignSystem.spaceMD),
+                      OutlinedButton(
+                        onPressed: () => Navigator.pop(context),
+                        child: const Text('Back to Home'),
+                      ),
+                    ],
+                  ),
+                ),
+              ],
             ),
-            CrisisHomeButton(
-              backgroundColor: phase.surface,
-              iconColor: phase.textPrimary,
-              borderColor: phase.textSecondary.withCalmAlpha(0.25),
-            ),
-          ],
+          ),
         ),
       ),
-      ),
     );
+  }
+
+  Color _severityColor() {
+    if (_severity <= 3) return DesignSystem.accentSage;
+    if (_severity <= 6) return const Color(0xFFFFB347);
+    return const Color(0xFFD4635F);
+  }
+
+  String _severityLabel() {
+    if (_severity <= 3) return 'Mild anxiety. Support basics and grounding.';
+    if (_severity <= 6) return 'Moderate anxiety. Use breathing & reassurance.';
+    return 'High anxiety. Priority: safety & immediate support.';
   }
 }

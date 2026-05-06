@@ -1,228 +1,170 @@
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
-import '../../providers/LanguageProvider.dart';
-import '../../providers/InterventionStateProvider.dart';
-import '../../routes/app_routes.dart';
-import '../../theme/calm_palette.dart';
-import '../../widgets/bilingual_line.dart';
+import 'package:google_fonts/google_fonts.dart';
+import '../../theme/app_theme.dart';
+import '../../widgets/glass_card.dart';
 import '../../components/EmergencyModal.dart';
-import '../../components/crisis_home_button.dart';
 
-class EscalationScreen extends StatefulWidget {
+const _warningSigns = [
+  {
+    'title': 'Severe Panic',
+    'description': 'Rapid breathing, chest pain, feeling of unreality',
+    'icon': Icons.warning_rounded,
+  },
+  {
+    'title': 'Self-Harm Talk',
+    'description': 'Any mention of harming themselves or others',
+    'icon': Icons.health_and_safety_rounded,
+  },
+  {
+    'title': 'Loss of Consciousness',
+    'description': 'Fainting, dizziness, confusion, or dissociation',
+    'icon': Icons.person_outline_rounded,
+  },
+  {
+    'title': 'No Improvement',
+    'description': 'After 15-20 minutes, still in severe distress',
+    'icon': Icons.trending_down_rounded,
+  },
+];
+
+class EscalationScreen extends StatelessWidget {
   const EscalationScreen({super.key});
 
   @override
-  State<EscalationScreen> createState() => _EscalationScreenState();
-}
-
-class _EscalationScreenState extends State<EscalationScreen> {
-  int _step = 0;
-  void _handleNextContent() {
-    if (_step < 1) {
-      setState(() => _step++);
-    }
-  }
-
-  void _handleFinish() {
-    final interventionState = Provider.of<InterventionStateProvider>(context, listen: false);
-    interventionState.resetIntervention();
-    Navigator.pushNamedAndRemoveUntil(context, AppRoutes.home, (route) => false);
-  }
-
-  @override
   Widget build(BuildContext context) {
-    final languageProvider = Provider.of<LanguageProvider>(context);
-    final isRTL = languageProvider.isRTL;
-    final phase = CalmPalette.helper(context);
+    final isDark = Theme.of(context).brightness == Brightness.dark;
 
     return PopScope(
       canPop: false,
       child: Scaffold(
-      body: Container(
-        decoration: BoxDecoration(gradient: phase.backgroundGradient),
-        child: Stack(
-          children: [
-            SafeArea(
-              child: Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 28, vertical: 24),
-                child: Column(
-                  children: [
-                    BilingualLine(
-                      translationKey: 'helper.escalation.title',
-                      primaryStyle: TextStyle(
-                        fontSize: 22,
-                        color: phase.textPrimary,
-                        fontWeight: FontWeight.w600,
-                      ),
-                      secondaryStyle: TextStyle(
-                        fontSize: 16,
-                        color: phase.textSecondary,
-                        height: 1.4,
-                      ),
-                    ),
-                    const SizedBox(height: 24),
-                    Expanded(
-                      child: SingleChildScrollView(
-                        child: Column(
-                          children: [
-                            if (_step == 0) ...[
-                              Container(
-                                width: 100,
-                                height: 100,
-                                decoration: BoxDecoration(
-                                  color: phase.surface,
-                                  shape: BoxShape.circle,
-                                  border: Border.all(
-                                    color: phase.secondary.withCalmAlpha(0.35),
-                                  ),
-                                ),
-                                child: Icon(
-                                  Icons.medical_information_rounded,
-                                  size: 48,
-                                  color: phase.accent,
-                                ),
-                              ),
-                              const SizedBox(height: 28),
-                              BilingualLine(
-                                translationKey: 'helper.escalation.redflags',
-                                primaryStyle: TextStyle(
-                                  fontSize: 20,
-                                  color: phase.textPrimary,
-                                  fontWeight: FontWeight.w600,
-                                ),
-                                secondaryStyle: TextStyle(
-                                  fontSize: 16,
-                                  color: phase.textSecondary,
-                                  height: 1.4,
-                                ),
-                              ),
-                              const SizedBox(height: 16),
-                              BilingualLine(
-                                translationKey: 'helper.escalation.redflags.text',
-                                primaryStyle: TextStyle(
-                                  fontSize: 17,
-                                  color: phase.textPrimary.withCalmAlpha(0.92),
-                                  height: 1.55,
-                                ),
-                                secondaryStyle: TextStyle(
-                                  fontSize: 16,
-                                  color: phase.textSecondary,
-                                  height: 1.5,
-                                ),
-                              ),
-                            ] else ...[
-                              BilingualLine(
-                                translationKey: 'helper.escalation.justification',
-                                primaryStyle: TextStyle(
-                                  fontSize: 20,
-                                  color: phase.textPrimary,
-                                  fontWeight: FontWeight.w600,
-                                ),
-                                secondaryStyle: TextStyle(
-                                  fontSize: 16,
-                                  color: phase.textSecondary,
-                                  height: 1.4,
-                                ),
-                              ),
-                              const SizedBox(height: 16),
-                              BilingualLine(
-                                translationKey: 'helper.escalation.justification.text',
-                                primaryStyle: TextStyle(
-                                  fontSize: 17,
-                                  color: phase.textPrimary.withCalmAlpha(0.92),
-                                  height: 1.55,
-                                ),
-                                secondaryStyle: TextStyle(
-                                  fontSize: 16,
-                                  color: phase.textSecondary,
-                                  height: 1.5,
-                                ),
-                              ),
-                            ],
-                          ],
+        backgroundColor: isDark ? DesignSystem.darkBase : DesignSystem.lightBase,
+        body: SceneBackground(
+          child: SafeArea(
+            child: Column(
+              children: [
+                // Header
+                Padding(
+                  padding: const EdgeInsets.all(DesignSystem.spaceLG),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        'When to Call 911',
+                        style: GoogleFonts.dmSerifDisplay(
+                          fontSize: 28,
+                          fontWeight: FontWeight.w400,
+                          color: isDark
+                              ? DesignSystem.darkTextPrimary
+                              : DesignSystem.lightTextPrimary,
                         ),
                       ),
-                    ),
-                    if (_step == 0)
-                      SizedBox(
-                        width: double.infinity,
-                        height: 56,
-                        child: FilledButton(
-                          onPressed: _handleNextContent,
-                          style: FilledButton.styleFrom(
-                            backgroundColor: phase.ctaBackground,
-                            foregroundColor: phase.ctaForeground,
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(16),
-                            ),
-                          ),
-                          child: Text(
-                            languageProvider.t('helper.next'),
-                            style: const TextStyle(fontSize: 19, fontWeight: FontWeight.w600),
-                            textDirection: isRTL ? TextDirection.rtl : TextDirection.ltr,
-                          ),
-                        ),
-                      )
-                    else ...[
-                      SizedBox(
-                        width: double.infinity,
-                        height: 56,
-                        child: FilledButton(
-                          onPressed: () => EmergencyModal.show(context),
-                          style: FilledButton.styleFrom(
-                            backgroundColor: phase.ctaBackground,
-                            foregroundColor: phase.ctaForeground,
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(16),
-                            ),
-                          ),
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              const Icon(Icons.phone_in_talk_rounded, size: 24),
-                              const SizedBox(width: 12),
-                              Text(
-                                languageProvider.t('helper.escalation.emergency'),
-                                style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w600),
-                                textDirection: isRTL ? TextDirection.rtl : TextDirection.ltr,
-                              ),
-                            ],
-                          ),
-                        ),
-                      ),
-                      const SizedBox(height: 12),
-                      SizedBox(
-                        width: double.infinity,
-                        height: 56,
-                        child: OutlinedButton(
-                          onPressed: _handleFinish,
-                          style: OutlinedButton.styleFrom(
-                            foregroundColor: phase.textPrimary,
-                            side: BorderSide(color: phase.secondary.withCalmAlpha(0.5), width: 1.5),
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(16),
-                            ),
-                          ),
-                          child: Text(
-                            languageProvider.t('helper.escalation.finish'),
-                            style: const TextStyle(fontSize: 17, fontWeight: FontWeight.w600),
-                            textDirection: isRTL ? TextDirection.rtl : TextDirection.ltr,
-                          ),
+                      const SizedBox(height: 8),
+                      Text(
+                        'Watch for these critical warning signs',
+                        style: GoogleFonts.nunito(
+                          fontSize: 14,
+                          fontWeight: FontWeight.w500,
+                          color: isDark
+                              ? DesignSystem.darkTextSecondary
+                              : DesignSystem.lightTextSecondary,
                         ),
                       ),
                     ],
-                  ],
+                  ),
                 ),
-              ),
+                // Warning signs list
+                Expanded(
+                  child: SingleChildScrollView(
+                    padding: const EdgeInsets.symmetric(horizontal: DesignSystem.spaceLG),
+                    child: Column(
+                      children: List.generate(
+                        _warningSigns.length,
+                        (index) {
+                          final sign = _warningSigns[index];
+                          return Padding(
+                            padding: const EdgeInsets.only(bottom: DesignSystem.spaceMD),
+                            child: GlassCard(
+                              tintColor: const Color(0xFFD4635F),
+                              tintOpacity: 0.15,
+                              child: Row(
+                                children: [
+                                  Container(
+                                    width: 52,
+                                    height: 52,
+                                    decoration: BoxDecoration(
+                                      shape: BoxShape.circle,
+                                      color: const Color(0xFFD4635F).withValues(alpha: 0.2),
+                                    ),
+                                    child: Icon(
+                                      sign['icon'] as IconData,
+                                      size: 26,
+                                      color: const Color(0xFFD4635F),
+                                    ),
+                                  ),
+                                  const SizedBox(width: DesignSystem.spaceMD),
+                                  Expanded(
+                                    child: Column(
+                                      crossAxisAlignment: CrossAxisAlignment.start,
+                                      children: [
+                                        Text(
+                                          sign['title'] as String,
+                                          style: GoogleFonts.nunito(
+                                            fontSize: 15,
+                                            fontWeight: FontWeight.w600,
+                                            color: isDark
+                                                ? DesignSystem.darkTextPrimary
+                                                : DesignSystem.lightTextPrimary,
+                                          ),
+                                        ),
+                                        const SizedBox(height: 2),
+                                        Text(
+                                          sign['description'] as String,
+                                          style: GoogleFonts.nunito(
+                                            fontSize: 12,
+                                            fontWeight: FontWeight.w400,
+                                            color: isDark
+                                                ? DesignSystem.darkTextSecondary
+                                                : DesignSystem.lightTextSecondary,
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          );
+                        },
+                      ),
+                    ),
+                  ),
+                ),
+                // Action buttons
+                Padding(
+                  padding: const EdgeInsets.all(DesignSystem.spaceLG),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    children: [
+                      ElevatedButton.icon(
+                        onPressed: () => EmergencyModal.show(context),
+                        icon: const Icon(Icons.phone_in_talk_rounded),
+                        label: const Text('Call Emergency'),
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: const Color(0xFFD4635F),
+                        ),
+                      ),
+                      const SizedBox(height: DesignSystem.spaceMD),
+                      ElevatedButton(
+                        onPressed: () => Navigator.pop(context),
+                        child: const Text('Back to Home'),
+                      ),
+                    ],
+                  ),
+                ),
+              ],
             ),
-            CrisisHomeButton(
-              backgroundColor: phase.surface,
-              iconColor: phase.textPrimary,
-              borderColor: phase.textSecondary.withCalmAlpha(0.25),
-            ),
-          ],
+          ),
         ),
-      ),
       ),
     );
   }
