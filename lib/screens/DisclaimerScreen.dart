@@ -4,7 +4,6 @@ import 'package:shared_preferences/shared_preferences.dart';
 import '../providers/LanguageProvider.dart';
 import '../providers/app_settings_provider.dart';
 import '../routes/app_routes.dart';
-import '../theme/calm_palette.dart';
 import '../widgets/bilingual_line.dart';
 
 class DisclaimerScreen extends StatefulWidget {
@@ -31,7 +30,7 @@ class _DisclaimerScreenState extends State<DisclaimerScreen> {
     final isRTL = languageProvider.isRTL;
     final theme = Theme.of(context);
     final cs = theme.colorScheme;
-    final muted = cs.onSurface.withCalmAlpha(0.68);
+    final muted = cs.onSurface.withValues(alpha: 0.68);
 
     return Scaffold(
       backgroundColor: theme.scaffoldBackgroundColor,
@@ -74,7 +73,7 @@ class _DisclaimerScreenState extends State<DisclaimerScreen> {
                             decoration: BoxDecoration(
                               color: cs.surface,
                               borderRadius: BorderRadius.circular(16),
-                              border: Border.all(color: cs.outline.withCalmAlpha(0.28)),
+                              border: Border.all(color: cs.outline.withValues(alpha: 0.28)),
                             ),
                             child: BilingualLine(
                               translationKey: 'disclaimer.text',
@@ -86,7 +85,7 @@ class _DisclaimerScreenState extends State<DisclaimerScreen> {
                               ),
                               secondaryStyle: TextStyle(
                                 fontSize: 16,
-                                color: muted.withCalmAlpha(0.92),
+                                color: muted.withValues(alpha: 0.92),
                                 height: 1.6,
                               ),
                             ),
@@ -142,8 +141,8 @@ class _DisclaimerScreenState extends State<DisclaimerScreen> {
                               style: FilledButton.styleFrom(
                                 backgroundColor: cs.primary,
                                 foregroundColor: cs.onPrimary,
-                                disabledBackgroundColor: cs.primary.withCalmAlpha(0.45),
-                                disabledForegroundColor: cs.onPrimary.withCalmAlpha(0.75),
+                                disabledBackgroundColor: cs.primary.withValues(alpha: 0.45),
+                                disabledForegroundColor: cs.onPrimary.withValues(alpha: 0.75),
                                 shape: RoundedRectangleBorder(
                                   borderRadius: BorderRadius.circular(14),
                                 ),

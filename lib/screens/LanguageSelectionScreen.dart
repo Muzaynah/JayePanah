@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../providers/LanguageProvider.dart';
 import '../routes/app_routes.dart';
-import '../theme/calm_palette.dart';
 import '../widgets/bilingual_line.dart';
 
 class LanguageSelectionScreen extends StatelessWidget {
@@ -51,7 +50,7 @@ class LanguageSelectionScreen extends StatelessWidget {
                                 ),
                                 secondaryStyle: TextStyle(
                                   fontSize: 17,
-                                  color: onBg.withCalmAlpha(0.65),
+                                  color: onBg.withValues(alpha: 0.65),
                                   height: 1.35,
                                 ),
                               ),
@@ -60,12 +59,12 @@ class LanguageSelectionScreen extends StatelessWidget {
                                 translationKey: 'language.subtitle',
                                 primaryStyle: TextStyle(
                                   fontSize: 17,
-                                  color: onBg.withCalmAlpha(0.68),
+                                  color: onBg.withValues(alpha: 0.68),
                                   height: 1.4,
                                 ),
                                 secondaryStyle: TextStyle(
                                   fontSize: 16,
-                                  color: onBg.withCalmAlpha(0.55),
+                                  color: onBg.withValues(alpha: 0.55),
                                   height: 1.35,
                                 ),
                               ),
@@ -77,7 +76,7 @@ class LanguageSelectionScreen extends StatelessWidget {
                                   onPressed: () => _handleLanguageSelect(context, 'en'),
                                   style: OutlinedButton.styleFrom(
                                     foregroundColor: onBg,
-                                    side: BorderSide(color: cs.primary.withCalmAlpha(0.65), width: 2),
+                                    side: BorderSide(color: cs.primary.withValues(alpha: 0.65), width: 2),
                                     shape: RoundedRectangleBorder(
                                       borderRadius: BorderRadius.circular(16),
                                     ),

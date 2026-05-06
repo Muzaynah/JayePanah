@@ -3,7 +3,6 @@ import 'package:provider/provider.dart';
 import '../providers/LanguageProvider.dart';
 import '../providers/app_settings_provider.dart';
 import '../routes/app_routes.dart';
-import '../theme/calm_palette.dart';
 import '../widgets/bilingual_line.dart';
 
 const _onboardingSteps = [
@@ -102,7 +101,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> with SingleTickerPr
     final step = _onboardingSteps[index];
     final theme = Theme.of(context);
     final onBg = theme.colorScheme.onSurface;
-    final muted = onBg.withCalmAlpha(0.68);
+    final muted = onBg.withValues(alpha: 0.68);
 
     return Column(
       key: ValueKey(index),
@@ -135,7 +134,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> with SingleTickerPr
           ),
           secondaryStyle: TextStyle(
             fontSize: 17,
-            color: muted.withCalmAlpha(0.92),
+            color: muted.withValues(alpha: 0.92),
             height: 1.5,
           ),
         ),
