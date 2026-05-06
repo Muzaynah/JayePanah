@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../providers/LanguageProvider.dart';
-import '../theme/app_theme.dart';
 import '../widgets/bilingual_line.dart';
 import '../services/audio_service.dart';
 
@@ -219,9 +218,6 @@ class _SoundCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    final cs = theme.colorScheme;
-
     return Material(
       color: Colors.transparent,
       borderRadius: BorderRadius.circular(16),
