@@ -4,6 +4,7 @@ class AudioService {
   static final AudioService _instance = AudioService._internal();
 
   late AudioPlayer _audioPlayer;
+  late AudioPlayer _effectPlayer;
   String? _currentSound;
 
   factory AudioService() {
@@ -12,6 +13,7 @@ class AudioService {
 
   AudioService._internal() {
     _audioPlayer = AudioPlayer();
+    _effectPlayer = AudioPlayer();
   }
 
   Future<void> playSound(String soundPath) async {
@@ -31,6 +33,22 @@ class AudioService {
     }
   }
 
+  Future<void> playEffect(String soundPath) async {
+    try {
+      final player = AudioPlayer();
+      await player.setAsset(soundPath);
+      await player.play();
+      // Dispose after playing
+      player.playerStateStream.listen((state) {
+        if (state.processingState == ProcessingState.completed) {
+          player.dispose();
+        }
+      });
+    } catch (e) {
+      // Silent fail
+    }
+  }
+
   Future<void> stopSound() async {
     try {
       await _audioPlayer.stop();
@@ -45,5 +63,6 @@ class AudioService {
 
   void dispose() {
     _audioPlayer.dispose();
+    _effectPlayer.dispose();
   }
 }

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:provider/provider.dart';
 import 'providers/LanguageProvider.dart';
 import 'providers/app_settings_provider.dart';
@@ -26,10 +27,12 @@ class App extends StatelessWidget {
             darkTheme: AppTheme.darkTheme,
             themeMode: appSettings.themeMode,
             locale: Locale(languageProvider.currentLanguage),
-            supportedLocales: const [
-              Locale('en'),
-              Locale('ur'),
+            localizationsDelegates: const [
+              GlobalMaterialLocalizations.delegate,
+              GlobalWidgetsLocalizations.delegate,
+              GlobalCupertinoLocalizations.delegate,
             ],
+            supportedLocales: const [Locale('en'), Locale('ur')],
             initialRoute: AppRoutes.splash,
             onGenerateRoute: RouteGenerator.generateRoute,
             builder: (context, child) {
@@ -45,7 +48,12 @@ class App extends StatelessWidget {
                 data: mq.copyWith(
                   textScaler: TextScaler.linear(systemScale * extra),
                 ),
-                child: child,
+                child: Directionality(
+                  textDirection: languageProvider.isRTL
+                      ? TextDirection.rtl
+                      : TextDirection.ltr,
+                  child: child,
+                ),
               );
             },
           );

@@ -17,12 +17,22 @@ class BreathingPhaseScreen extends StatefulWidget {
 
 class _BreathingPhaseScreenState extends State<BreathingPhaseScreen>
     with TickerProviderStateMixin {
-  late AnimationController _cycleController;
+  late AnimationController _breathController;
+  late AnimationController _pulseController;
   late Animation<double> _scaleAnimation;
   bool _hapticEnabled = true;
-  bool _isPaused = false;
+  bool _isPressing = false;
   int _breathCount = 0;
-  String _currentPhase = 'inhale';
+  String _currentPhase = 'idle';
+  int _paletteIndex = 0;
+  bool _isHoldingAfterRelease = false;
+
+  static const List<List<Color>> _phasePalettes = [
+    [Color(0xFF6B9BD1), Color(0xFF7EC17F), Color(0xFFB19CD9)],
+    [Color(0xFF2E96DE), Color(0xFFF17CB0), Color(0xFFFFC75F)],
+    [Color(0xFF4FC3C8), Color(0xFF845EC2), Color(0xFF7EC17F)],
+    [Color(0xFF6B9BD1), Color(0xFFE67E22), Color(0xFFB19CD9)],
+  ];
 
   @override
   void initState() {
@@ -39,61 +49,66 @@ class _BreathingPhaseScreenState extends State<BreathingPhaseScreen>
   }
 
   void _initializeAnimations() {
-    _cycleController = AnimationController(
-      duration: const Duration(seconds: 10),
+    _breathController = AnimationController(
+      duration: const Duration(milliseconds: 1800),
       vsync: this,
-    )..repeat();
-
-    _scaleAnimation = Tween<double>(begin: 0.6, end: 1.0).animate(
-      CurvedAnimation(parent: _cycleController, curve: Curves.easeInOut),
     );
 
-    _cycleController.addListener(_onCycleUpdate);
+    _pulseController = AnimationController(
+      duration: const Duration(milliseconds: 2400),
+      vsync: this,
+    )..repeat(reverse: true);
+
+    _scaleAnimation = Tween<double>(begin: 0.6, end: 1.0).animate(
+      CurvedAnimation(parent: _breathController, curve: Curves.easeInOutCubic),
+    );
   }
 
-  void _onCycleUpdate() {
-    final progress = _cycleController.value;
-    String newPhase = 'inhale';
-
-    if (progress < 0.4) {
-      newPhase = 'inhale';
-    } else if (progress < 0.5) {
-      newPhase = 'hold';
-    } else if (progress < 0.9) {
-      newPhase = 'exhale';
-    } else {
-      newPhase = 'hold';
-    }
-
-    if (newPhase != _currentPhase) {
-      setState(() {
-        _currentPhase = newPhase;
-        if (newPhase == 'exhale' && progress > 0.5 && progress < 0.51) {
-          _breathCount++;
-        }
-      });
-
-      if (_hapticEnabled && newPhase == 'inhale') {
-        Vibration.vibrate(duration: 100);
-      }
-    }
-  }
-
-  void _togglePause() {
+  Future<void> _startInhale() async {
+    if (_isHoldingAfterRelease || _isPressing) return;
     setState(() {
-      _isPaused = !_isPaused;
+      _isPressing = true;
+      _currentPhase = 'inhale';
     });
+    if (_hapticEnabled) {
+      Vibration.vibrate(duration: 45);
+    }
+    await _breathController.forward();
+  }
 
-    if (_isPaused) {
-      _cycleController.stop();
-    } else {
-      _cycleController.forward();
+  Future<void> _onRelease() async {
+    if (!_isPressing || _isHoldingAfterRelease) return;
+    setState(() {
+      _isPressing = false;
+      _isHoldingAfterRelease = true;
+      _currentPhase = 'hold';
+    });
+    if (_hapticEnabled) {
+      Vibration.vibrate(duration: 70);
+    }
+    await Future.delayed(const Duration(milliseconds: 850));
+    if (!mounted) return;
+    setState(() {
+      _currentPhase = 'exhale';
+      _isHoldingAfterRelease = false;
+    });
+    await _breathController.reverse();
+
+    if (!mounted) return;
+    setState(() {
+      _breathCount++;
+      _paletteIndex = (_paletteIndex + 1) % _phasePalettes.length;
+      _currentPhase = 'idle';
+    });
+    if (_hapticEnabled) {
+      Vibration.vibrate(duration: 55);
     }
   }
 
   @override
   void dispose() {
-    _cycleController.dispose();
+    _breathController.dispose();
+    _pulseController.dispose();
     super.dispose();
   }
 
@@ -106,9 +121,27 @@ class _BreathingPhaseScreenState extends State<BreathingPhaseScreen>
         return lang.t('calm.color.hold');
       case 'exhale':
         return lang.t('calm.color.exhale');
+      case 'idle':
+        return lang.t('self.breathing.tap_hold');
       default:
         return '';
     }
+  }
+
+  List<Color> _phaseColors(bool isDark) {
+    final base = _phasePalettes[_paletteIndex];
+    if (isDark) {
+      return [
+        base[0].withValues(alpha: 0.88),
+        base[1].withValues(alpha: 0.62),
+        base[2].withValues(alpha: 0.28),
+      ];
+    }
+    return [
+      base[0].withValues(alpha: 0.9),
+      base[1].withValues(alpha: 0.56),
+      base[2].withValues(alpha: 0.16),
+    ];
   }
 
   @override
@@ -126,88 +159,106 @@ class _BreathingPhaseScreenState extends State<BreathingPhaseScreen>
         isBreathingScreen: true,
         child: SafeArea(
           child: Center(
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                AnimatedBuilder(
-                  animation: _scaleAnimation,
-                  builder: (context, child) {
-                    return Transform.scale(
-                      scale: _scaleAnimation.value,
-                      child: Container(
-                        width: 200,
-                        height: 200,
-                        decoration: BoxDecoration(
-                          shape: BoxShape.circle,
-                          gradient: RadialGradient(
-                            colors: [
-                              DesignSystem.glassSage.withValues(alpha: 0.9),
-                              DesignSystem.glassLavender.withValues(alpha: 0.4),
-                              Colors.transparent,
-                            ],
-                            stops: const [0.0, 0.6, 1.0],
-                          ),
-                          boxShadow: [
-                            BoxShadow(
-                              color: DesignSystem.glassSage.withValues(alpha: 0.4),
-                              blurRadius: _scaleAnimation.value > 0.8 ? 60 : 20,
-                              spreadRadius: _scaleAnimation.value > 0.8 ? 20 : 5,
+            child: GestureDetector(
+              onTapDown: (_) => _startInhale(),
+              onTapUp: (_) => _onRelease(),
+              onTapCancel: _onRelease,
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  AnimatedBuilder(
+                    animation: Listenable.merge([
+                      _scaleAnimation,
+                      _pulseController,
+                    ]),
+                    builder: (context, child) {
+                      final colors = _phaseColors(isDark);
+                      final pulse = (_pulseController.value * 0.15) + 0.86;
+                      return Transform.scale(
+                        scale: _scaleAnimation.value * pulse,
+                        child: AnimatedContainer(
+                          duration: const Duration(milliseconds: 260),
+                          width: 210,
+                          height: 210,
+                          decoration: BoxDecoration(
+                            shape: BoxShape.circle,
+                            gradient: RadialGradient(
+                              colors: colors,
+                              stops: const [0.0, 0.62, 1.0],
                             ),
-                          ],
+                            boxShadow: [
+                              BoxShadow(
+                                color: colors.first.withValues(alpha: 0.35),
+                                blurRadius: _scaleAnimation.value > 0.85
+                                    ? 65
+                                    : 28,
+                                spreadRadius: _scaleAnimation.value > 0.85
+                                    ? 18
+                                    : 6,
+                              ),
+                            ],
+                          ),
                         ),
-                      ),
-                    );
-                  },
-                ),
-                const SizedBox(height: 60),
-                Text(
-                  _getInstruction(_currentPhase),
-                  style: GoogleFonts.dmSerifDisplay(
-                    fontSize: 28,
-                    fontWeight: FontWeight.w400,
-                    color: isDark
-                        ? DesignSystem.darkTextPrimary
-                        : DesignSystem.textPrimary,
+                      );
+                    },
                   ),
-                ),
-                const SizedBox(height: 40),
-                GlassCard(
-                  tintColor: DesignSystem.glassLavender,
-                  tintOpacity: 0.20,
-                  child: Text(
-                    '$_breathCount ${lang.t('self.breathing.count')}',
+                  const SizedBox(height: 48),
+                  Text(
+                    _getInstruction(_currentPhase),
                     style: GoogleFonts.nunito(
-                      fontSize: 18,
-                      fontWeight: FontWeight.w600,
+                      fontSize: 24,
+                      fontWeight: FontWeight.w700,
                       color: isDark
                           ? DesignSystem.darkTextPrimary
                           : DesignSystem.textPrimary,
                     ),
                   ),
-                ),
-                const SizedBox(height: 40),
-                FloatingActionButton.extended(
-                  onPressed: _togglePause,
-                  label: Text(_isPaused ? 'Resume' : 'Pause'),
-                  icon: Icon(_isPaused ? Icons.play_arrow : Icons.pause),
-                  backgroundColor: DesignSystem.accentSage,
-                ),
-                const SizedBox(height: 40),
-                Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 20),
-                  child: ElevatedButton(
-                    onPressed: () {
-                      context
-                          .read<InterventionStateProvider>()
-                          .setGroundingStep(0);
-                      context
-                          .read<InterventionStateProvider>()
-                          .setSelfRegulationPhase(SelfRegulationPhase.grounding);
-                    },
-                    child: Text(lang.t('self.breathing.continue')),
+                  const SizedBox(height: 12),
+                  Text(
+                    lang.t('self.breathing.hold_hint'),
+                    textAlign: TextAlign.center,
+                    style: GoogleFonts.nunito(
+                      fontSize: 14,
+                      fontWeight: FontWeight.w500,
+                      color: isDark
+                          ? DesignSystem.darkTextSecondary
+                          : DesignSystem.textSecondary,
+                    ),
                   ),
-                ),
-              ],
+                  const SizedBox(height: 26),
+                  GlassCard(
+                    tintColor: DesignSystem.glassLavender,
+                    tintOpacity: 0.20,
+                    child: Text(
+                      '$_breathCount ${lang.t('self.breathing.count')}',
+                      style: GoogleFonts.nunito(
+                        fontSize: 18,
+                        fontWeight: FontWeight.w600,
+                        color: isDark
+                            ? DesignSystem.darkTextPrimary
+                            : DesignSystem.textPrimary,
+                      ),
+                    ),
+                  ),
+                  const SizedBox(height: 34),
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 20),
+                    child: ElevatedButton(
+                      onPressed: () {
+                        context
+                            .read<InterventionStateProvider>()
+                            .setGroundingStep(0);
+                        context
+                            .read<InterventionStateProvider>()
+                            .setSelfRegulationPhase(
+                              SelfRegulationPhase.grounding,
+                            );
+                      },
+                      child: Text(lang.t('self.breathing.continue')),
+                    ),
+                  ),
+                ],
+              ),
             ),
           ),
         ),

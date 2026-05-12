@@ -37,7 +37,8 @@ class _SettingsScreenState extends State<SettingsScreen> {
     if (!mounted) return;
     setState(() {
       _hapticBreathing = prefs.getBool('jayepanah_haptic') ?? true;
-      _emergencyController.text = prefs.getString('jayepanah_emergency_number') ?? '1122';
+      _emergencyController.text =
+          prefs.getString('jayepanah_emergency_number') ?? '1122';
     });
   }
 
@@ -48,7 +49,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final lang = context.read<LanguageProvider>();
+    final lang = context.watch<LanguageProvider>();
     final appSettings = context.watch<AppSettingsProvider>();
     final isDark = Theme.of(context).brightness == Brightness.dark;
     final isRTL = lang.isRTL;
@@ -96,7 +97,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                   children: [
                     // Theme selection
                     Text(
-                      'Theme',
+                      lang.t('settings.appearance'),
                       style: GoogleFonts.nunito(
                         fontSize: 14,
                         fontWeight: FontWeight.w600,
@@ -107,29 +108,34 @@ class _SettingsScreenState extends State<SettingsScreen> {
                       ),
                     ),
                     const SizedBox(height: 12),
-                    Row(
+                    Wrap(
+                      spacing: 8,
+                      runSpacing: 8,
                       children: [
-                        Expanded(
+                        SizedBox(
+                          width: 110,
                           child: _ThemeButton(
-                            label: 'System',
+                            label: lang.t('settings.theme.system'),
                             isSelected: appSettings.themePreference == 'system',
                             isDark: isDark,
-                            onTap: () => appSettings.setThemePreference('system'),
+                            onTap: () =>
+                                appSettings.setThemePreference('system'),
                           ),
                         ),
-                        const SizedBox(width: 8),
-                        Expanded(
+                        SizedBox(
+                          width: 110,
                           child: _ThemeButton(
-                            label: 'Light',
+                            label: lang.t('settings.theme.light'),
                             isSelected: appSettings.themePreference == 'light',
                             isDark: isDark,
-                            onTap: () => appSettings.setThemePreference('light'),
+                            onTap: () =>
+                                appSettings.setThemePreference('light'),
                           ),
                         ),
-                        const SizedBox(width: 8),
-                        Expanded(
+                        SizedBox(
+                          width: 110,
                           child: _ThemeButton(
-                            label: 'Dark',
+                            label: lang.t('settings.theme.dark'),
                             isSelected: appSettings.themePreference == 'dark',
                             isDark: isDark,
                             onTap: () => appSettings.setThemePreference('dark'),
@@ -155,7 +161,9 @@ class _SettingsScreenState extends State<SettingsScreen> {
                       decoration: BoxDecoration(
                         borderRadius: BorderRadius.circular(12),
                         border: Border.all(
-                          color: DesignSystem.textSecondary.withValues(alpha: 0.2),
+                          color: DesignSystem.textSecondary.withValues(
+                            alpha: 0.2,
+                          ),
                         ),
                       ),
                       child: Row(
@@ -194,7 +202,9 @@ class _SettingsScreenState extends State<SettingsScreen> {
                           Container(
                             width: 1,
                             height: 20,
-                            color: DesignSystem.textSecondary.withValues(alpha: 0.2),
+                            color: DesignSystem.textSecondary.withValues(
+                              alpha: 0.2,
+                            ),
                           ),
                           Expanded(
                             child: Material(
@@ -236,22 +246,26 @@ class _SettingsScreenState extends State<SettingsScreen> {
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        Text(
-                          lang.t('settings.haptic'),
-                          style: GoogleFonts.nunito(
-                            fontSize: 16,
-                            fontWeight: FontWeight.w500,
-                            color: isDark
-                                ? DesignSystem.darkTextPrimary
-                                : DesignSystem.textPrimary,
+                        Expanded(
+                          child: Text(
+                            lang.t('settings.haptic'),
+                            maxLines: 2,
+                            overflow: TextOverflow.ellipsis,
+                            style: GoogleFonts.nunito(
+                              fontSize: 16,
+                              fontWeight: FontWeight.w500,
+                              color: isDark
+                                  ? DesignSystem.darkTextPrimary
+                                  : DesignSystem.textPrimary,
+                            ),
                           ),
                         ),
+                        const SizedBox(width: 12),
                         Switch(
                           value: _hapticBreathing,
                           onChanged: (value) async {
                             setState(() => _hapticBreathing = value);
-                            final prefs =
-                                await SharedPreferences.getInstance();
+                            final prefs = await SharedPreferences.getInstance();
                             await prefs.setBool('jayepanah_haptic', value);
                           },
                         ),
@@ -294,6 +308,40 @@ class _SettingsScreenState extends State<SettingsScreen> {
                       ),
                     ),
                     const SizedBox(height: 32),
+                    GlassCard(
+                      tintColor: DesignSystem.glassPeach,
+                      tintOpacity: 0.16,
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.stretch,
+                        children: [
+                          Text(
+                            lang.t('settings.disclaimer'),
+                            textAlign: isRTL ? TextAlign.right : TextAlign.left,
+                            style: GoogleFonts.nunito(
+                              fontSize: 16,
+                              fontWeight: FontWeight.w700,
+                              color: isDark
+                                  ? DesignSystem.darkTextPrimary
+                                  : DesignSystem.textPrimary,
+                            ),
+                          ),
+                          const SizedBox(height: 8),
+                          Text(
+                            lang.t('settings.disclaimer.text'),
+                            textAlign: isRTL ? TextAlign.right : TextAlign.left,
+                            style: GoogleFonts.nunito(
+                              fontSize: 14,
+                              height: 1.5,
+                              fontWeight: FontWeight.w500,
+                              color: isDark
+                                  ? DesignSystem.darkTextSecondary
+                                  : DesignSystem.textSecondary,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                    const SizedBox(height: 24),
                     SizedBox(
                       width: double.infinity,
                       height: 56,
@@ -302,8 +350,9 @@ class _SettingsScreenState extends State<SettingsScreen> {
                         icon: const Icon(Icons.phone_in_talk_rounded),
                         label: Text(lang.t('home.emergency')),
                         style: ElevatedButton.styleFrom(
-                          backgroundColor: const Color(0xFFD4635F)
-                              .withValues(alpha: 0.8),
+                          backgroundColor: const Color(
+                            0xFFD4635F,
+                          ).withValues(alpha: 0.8),
                         ),
                       ),
                     ),
@@ -359,8 +408,8 @@ class _ThemeButton extends StatelessWidget {
                 color: isSelected
                     ? Colors.white
                     : (isDark
-                        ? DesignSystem.darkTextPrimary
-                        : DesignSystem.textPrimary),
+                          ? DesignSystem.darkTextPrimary
+                          : DesignSystem.textPrimary),
               ),
             ),
           ),

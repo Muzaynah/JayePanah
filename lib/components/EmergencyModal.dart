@@ -6,8 +6,9 @@ import '../providers/LanguageProvider.dart';
 import '../providers/app_settings_provider.dart';
 import '../theme/calm_palette.dart';
 import '../widgets/bilingual_line.dart';
+import '../widgets/glass_card.dart';
 
-/// Text / accent colors for the emergency sheet 
+/// Text / accent colors for the emergency sheet
 class EmergencyPanelStyle {
   final Color panel;
   final Color onPanel;
@@ -63,6 +64,7 @@ class EmergencyHeroPhoneChip extends StatelessWidget {
 class EmergencyModal extends StatelessWidget {
   final VoidCallback onClose;
   final bool heroFromHome;
+
   /// Drives staggered fade for body content after [Hero] (from-home path only uses delayed interval).
   final Animation<double> routeAnimation;
 
@@ -76,8 +78,13 @@ class EmergencyModal extends StatelessWidget {
   /// [PageRouteBuilder] + non-zero duration so [Hero] has time to fly
   static Future<void> show(BuildContext context, {bool fromHome = false}) {
     final nav = Navigator.of(context, rootNavigator: true);
-    final reduceMotion = Provider.of<AppSettingsProvider>(context, listen: false).reduceMotion;
-    final barrierLabel = MaterialLocalizations.of(context).modalBarrierDismissLabel;
+    final reduceMotion = Provider.of<AppSettingsProvider>(
+      context,
+      listen: false,
+    ).reduceMotion;
+    final barrierLabel = MaterialLocalizations.of(
+      context,
+    ).modalBarrierDismissLabel;
     final duration = reduceMotion
         ? Duration.zero
         : Duration(milliseconds: fromHome ? 600 : 320);
@@ -110,9 +117,13 @@ class EmergencyModal extends StatelessWidget {
   }
 
   static Future<void> launchCall(BuildContext context) async {
-    final languageProvider = Provider.of<LanguageProvider>(context, listen: false);
+    final languageProvider = Provider.of<LanguageProvider>(
+      context,
+      listen: false,
+    );
     final prefs = await SharedPreferences.getInstance();
-    final emergencyNumber = prefs.getString('jayepanah_emergency_number') ?? '1122';
+    final emergencyNumber =
+        prefs.getString('jayepanah_emergency_number') ?? '1122';
     final uri = Uri.parse('tel:$emergencyNumber');
     try {
       if (await canLaunchUrl(uri)) {
@@ -120,7 +131,9 @@ class EmergencyModal extends StatelessWidget {
       } else {
         if (context.mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text(languageProvider.t('emergency.call_failed'))),
+            SnackBar(
+              content: Text(languageProvider.t('emergency.call_failed')),
+            ),
           );
         }
       }
@@ -134,7 +147,10 @@ class EmergencyModal extends StatelessWidget {
   }
 
   static Future<void> launchContactCall(BuildContext context) async {
-    final languageProvider = Provider.of<LanguageProvider>(context, listen: false);
+    final languageProvider = Provider.of<LanguageProvider>(
+      context,
+      listen: false,
+    );
     final prefs = await SharedPreferences.getInstance();
     final contactNumber = prefs.getString('jayepanah_trusted_contact');
 
@@ -154,7 +170,9 @@ class EmergencyModal extends StatelessWidget {
       } else {
         if (context.mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text(languageProvider.t('emergency.call_failed'))),
+            SnackBar(
+              content: Text(languageProvider.t('emergency.call_failed')),
+            ),
           );
         }
       }
@@ -168,7 +186,10 @@ class EmergencyModal extends StatelessWidget {
   }
 
   static Future<void> launchContactSms(BuildContext context) async {
-    final languageProvider = Provider.of<LanguageProvider>(context, listen: false);
+    final languageProvider = Provider.of<LanguageProvider>(
+      context,
+      listen: false,
+    );
     final prefs = await SharedPreferences.getInstance();
     final contactNumber = prefs.getString('jayepanah_trusted_contact');
     final messageTemplate = prefs.getString('jayepanah_message_template');
@@ -182,15 +203,20 @@ class EmergencyModal extends StatelessWidget {
       return;
     }
 
-    final message = messageTemplate ?? languageProvider.t('settings.message.default');
-    final uri = Uri.parse('sms:$contactNumber?body=${Uri.encodeComponent(message)}');
+    final message =
+        messageTemplate ?? languageProvider.t('settings.message.default');
+    final uri = Uri.parse(
+      'sms:$contactNumber?body=${Uri.encodeComponent(message)}',
+    );
     try {
       if (await canLaunchUrl(uri)) {
         await launchUrl(uri);
       } else {
         if (context.mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text(languageProvider.t('emergency.call_failed'))),
+            SnackBar(
+              content: Text(languageProvider.t('emergency.call_failed')),
+            ),
           );
         }
       }
@@ -237,7 +263,9 @@ class EmergencyModal extends StatelessWidget {
       opacity: detailsFade,
       child: Column(
         mainAxisSize: MainAxisSize.min,
-        crossAxisAlignment: isRTL ? CrossAxisAlignment.end : CrossAxisAlignment.start,
+        crossAxisAlignment: isRTL
+            ? CrossAxisAlignment.end
+            : CrossAxisAlignment.start,
         children: [
           const SizedBox(height: 8),
           BilingualLine(
@@ -285,7 +313,10 @@ class EmergencyModal extends StatelessWidget {
               ),
               child: Text(
                 languageProvider.t('emergency.call'),
-                style: const TextStyle(fontSize: 17, fontWeight: FontWeight.w600),
+                style: const TextStyle(
+                  fontSize: 17,
+                  fontWeight: FontWeight.w600,
+                ),
                 textDirection: isRTL ? TextDirection.rtl : TextDirection.ltr,
               ),
             ),
@@ -294,7 +325,8 @@ class EmergencyModal extends StatelessWidget {
           FutureBuilder<String?>(
             future: _getTrustedContact(),
             builder: (context, snapshot) {
-              final hasContact = snapshot.data != null && snapshot.data!.isNotEmpty;
+              final hasContact =
+                  snapshot.data != null && snapshot.data!.isNotEmpty;
               if (!hasContact) return const SizedBox.shrink();
               return Padding(
                 padding: const EdgeInsets.only(bottom: 12),
@@ -312,8 +344,13 @@ class EmergencyModal extends StatelessWidget {
                     ),
                     child: Text(
                       languageProvider.t('emergency.contact_call'),
-                      style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w500),
-                      textDirection: isRTL ? TextDirection.rtl : TextDirection.ltr,
+                      style: const TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.w500,
+                      ),
+                      textDirection: isRTL
+                          ? TextDirection.rtl
+                          : TextDirection.ltr,
                     ),
                   ),
                 ),
@@ -323,7 +360,8 @@ class EmergencyModal extends StatelessWidget {
           FutureBuilder<String?>(
             future: _getTrustedContact(),
             builder: (context, snapshot) {
-              final hasContact = snapshot.data != null && snapshot.data!.isNotEmpty;
+              final hasContact =
+                  snapshot.data != null && snapshot.data!.isNotEmpty;
               if (!hasContact) return const SizedBox.shrink();
               return Padding(
                 padding: const EdgeInsets.only(bottom: 12),
@@ -341,8 +379,13 @@ class EmergencyModal extends StatelessWidget {
                     ),
                     child: Text(
                       languageProvider.t('emergency.contact_sms'),
-                      style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w500),
-                      textDirection: isRTL ? TextDirection.rtl : TextDirection.ltr,
+                      style: const TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.w500,
+                      ),
+                      textDirection: isRTL
+                          ? TextDirection.rtl
+                          : TextDirection.ltr,
                     ),
                   ),
                 ),
@@ -363,7 +406,10 @@ class EmergencyModal extends StatelessWidget {
               ),
               child: Text(
                 languageProvider.t('emergency.cancel'),
-                style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w500),
+                style: const TextStyle(
+                  fontSize: 16,
+                  fontWeight: FontWeight.w500,
+                ),
                 textDirection: isRTL ? TextDirection.rtl : TextDirection.ltr,
               ),
             ),
@@ -374,31 +420,29 @@ class EmergencyModal extends StatelessWidget {
 
     return Center(
       child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 24),
-        child: Material(
-          color: style.panel,
-          elevation: 10,
-          shadowColor: Colors.black.withCalmAlpha(0.35),
-          clipBehavior: Clip.antiAlias,
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(20),
-            side: BorderSide(
-              color: style.muted.withCalmAlpha(dark ? 0.4 : 0.28),
-              width: 1,
-            ),
-          ),
-          child: Padding(
-            padding: const EdgeInsets.fromLTRB(20, 18, 20, 20),
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              crossAxisAlignment: isRTL ? CrossAxisAlignment.end : CrossAxisAlignment.start,
-              children: [
-                Align(
-                  alignment: AlignmentDirectional.centerStart,
-                  child: phoneLead,
-                ),
-                fadedBody,
-              ],
+        padding: const EdgeInsets.symmetric(horizontal: 20),
+        child: ConstrainedBox(
+          constraints: const BoxConstraints(maxWidth: 520, maxHeight: 720),
+          child: GlassCard(
+            borderRadius: BorderRadius.circular(24),
+            tintColor: style.panel,
+            tintOpacity: dark ? 0.72 : 0.86,
+            padding: const EdgeInsets.all(22),
+            child: SingleChildScrollView(
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: isRTL
+                    ? CrossAxisAlignment.end
+                    : CrossAxisAlignment.start,
+                children: [
+                  Align(
+                    alignment: AlignmentDirectional.centerStart,
+                    child: phoneLead,
+                  ),
+                  const SizedBox(height: 16),
+                  fadedBody,
+                ],
+              ),
             ),
           ),
         ),

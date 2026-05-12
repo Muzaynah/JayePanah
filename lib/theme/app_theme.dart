@@ -3,34 +3,35 @@ import 'package:google_fonts/google_fonts.dart';
 
 class DesignSystem {
   // LIGHT MODE — Warm, soft, natural
-  static const Color lightBase = Color(0xFFF4F2ED);
-  static const Color lightGradientStart = Color(0xFFF0EEE8);
-  static const Color lightGradientEnd = Color(0xFFEAEDF0);
-  static const Color lightTextPrimary = Color(0xFF2A2A25);
-  static const Color lightTextSecondary = Color(0xFF7C7B72);
+  static const Color lightBase = Color(0xFFF6F3EC);
+  static const Color lightGradientStart = Color(0xFFF2EFE4);
+  static const Color lightGradientEnd = Color(0xFFE9E5DC);
+  static const Color lightTextPrimary = Color(0xFF29251E);
+  static const Color lightTextSecondary = Color(0xFF5E5A50);
 
   // DARK MODE — Deep night sky feeling
-  static const Color darkBase = Color(0xFF141A18);
-  static const Color darkGradientStart = Color(0xFF141A18);
-  static const Color darkGradientEnd = Color(0xFF111520);
-  static const Color darkTextPrimary = Color(0xFFECEAE0);
+  static const Color darkBase = Color(0xFF111714);
+  static const Color darkGradientStart = Color(0xFF111714);
+  static const Color darkGradientEnd = Color(0xFF0A100E);
+  static const Color darkTextPrimary = Color(0xFFF0ECE2);
   static const Color darkTextSecondary = Color(0xFF8A9488);
 
   // Legacy colors (keeping for backward compatibility)
-  static const Color backgroundBase = Color(0xFFF7F6F2);
-  static const Color backgroundSurface = Color(0xFFEFEDE8);
+  static const Color backgroundBase = Color(0xFFF5F2E9);
+  static const Color backgroundSurface = Color(0xFFF0EBE1);
 
-  static const Color glassSage = Color(0xFFA8C5A0);
-  static const Color glassLavender = Color(0xFFB8B0D4);
-  static const Color glassPeach = Color(0xFFE8C4B0);
-  static const Color glassMist = Color(0xFFD4E0DC);
+  static const Color glassSage = Color(0xFF7A9D78);
+  static const Color glassLavender = Color(0xFF8E78B0);
+  static const Color glassPeach = Color(0xFFDFAE92);
+  static const Color glassMist = Color(0xFFC8D7CE);
 
-  static const Color textPrimary = Color(0xFF2E2E2E);
-  static const Color textSecondary = Color(0xFF7A7A72);
-  static const Color textOnGlass = Color(0xFF3A3A38);
+  static const Color textPrimary = Color(0xFF2C2A24);
+  static const Color textSecondary = Color(0xFF5F5B53);
+  static const Color textOnGlass = Color(0xFF34322D);
 
-  static const Color accentSage = Color(0xFF6B9B6B);
-  static const Color accentLavender = Color(0xFF7E74B8);
+  static const Color accentSage = Color(0xFF4F7A56);
+  static const Color accentLavender = Color(0xFF6651A5);
+  static const Color accentDanger = Color(0xFFCF3D40);
 
   // Spacing scale
   static const double spaceXS = 4.0;
@@ -63,16 +64,16 @@ class AppTheme {
         onPrimary: Colors.white,
         secondary: DesignSystem.accentLavender,
         onSecondary: Colors.white,
-        surface: DesignSystem.backgroundBase,
+        surface: Colors.white,
         onSurface: DesignSystem.textPrimary,
         error: const Color(0xFFD4635F),
         onError: Colors.white,
         outline: DesignSystem.textSecondary,
-        outlineVariant: DesignSystem.textSecondary.withOpacity(0.3),
+        outlineVariant: DesignSystem.textSecondary.withOpacity(0.34),
         surfaceContainer: DesignSystem.backgroundSurface,
-        surfaceContainerHigh: DesignSystem.glassMist.withOpacity(0.25),
+        surfaceContainerHigh: DesignSystem.glassMist.withOpacity(0.30),
       ),
-      scaffoldBackgroundColor: DesignSystem.backgroundBase,
+      scaffoldBackgroundColor: DesignSystem.lightBase,
       appBarTheme: AppBarTheme(
         elevation: 0,
         centerTitle: false,
@@ -85,36 +86,38 @@ class AppTheme {
         ),
       ),
       filledButtonTheme: FilledButtonThemeData(
-        style: ElevatedButton.styleFrom(
-          backgroundColor: DesignSystem.accentSage,
-          foregroundColor: Colors.white,
-          minimumSize: const Size(double.infinity, 56),
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(DesignSystem.radiusMD),
-          ),
-          elevation: 0,
-          shadowColor: Colors.transparent,
-        ).copyWith(
-          overlayColor: MaterialStateProperty.all(
-            Colors.white.withOpacity(0.15),
-          ),
-        ),
+        style:
+            ElevatedButton.styleFrom(
+              backgroundColor: DesignSystem.accentSage,
+              foregroundColor: Colors.white,
+              minimumSize: const Size(double.infinity, 56),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(DesignSystem.radiusMD),
+              ),
+              elevation: 0,
+              shadowColor: Colors.transparent,
+            ).copyWith(
+              overlayColor: MaterialStateProperty.all(
+                Colors.white.withOpacity(0.15),
+              ),
+            ),
       ),
       elevatedButtonTheme: ElevatedButtonThemeData(
-        style: ElevatedButton.styleFrom(
-          backgroundColor: DesignSystem.accentSage,
-          foregroundColor: Colors.white,
-          minimumSize: const Size(double.infinity, 56),
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(DesignSystem.radiusMD),
-          ),
-          elevation: 0,
-          shadowColor: Colors.transparent,
-        ).copyWith(
-          overlayColor: MaterialStateProperty.all(
-            Colors.white.withOpacity(0.15),
-          ),
-        ),
+        style:
+            ElevatedButton.styleFrom(
+              backgroundColor: DesignSystem.accentSage,
+              foregroundColor: Colors.white,
+              minimumSize: const Size(double.infinity, 56),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(DesignSystem.radiusMD),
+              ),
+              elevation: 0,
+              shadowColor: Colors.transparent,
+            ).copyWith(
+              overlayColor: MaterialStateProperty.all(
+                Colors.white.withOpacity(0.15),
+              ),
+            ),
       ),
       outlinedButtonTheme: OutlinedButtonThemeData(
         style: OutlinedButton.styleFrom(
@@ -148,7 +151,7 @@ class AppTheme {
         ),
         titleMedium: GoogleFonts.nunito(
           fontSize: 16,
-          fontWeight: FontWeight.w600,
+          fontWeight: FontWeight.w700,
           color: DesignSystem.textPrimary,
         ),
         bodyLarge: GoogleFonts.nunito(
@@ -161,6 +164,7 @@ class AppTheme {
           fontSize: 14,
           fontWeight: FontWeight.w500,
           color: DesignSystem.textSecondary,
+          height: 1.5,
         ),
         labelLarge: GoogleFonts.nunito(
           fontSize: 16,
@@ -206,36 +210,38 @@ class AppTheme {
         ),
       ),
       filledButtonTheme: FilledButtonThemeData(
-        style: ElevatedButton.styleFrom(
-          backgroundColor: DesignSystem.accentSage,
-          foregroundColor: Colors.white,
-          minimumSize: const Size(double.infinity, 56),
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(DesignSystem.radiusMD),
-          ),
-          elevation: 0,
-          shadowColor: Colors.transparent,
-        ).copyWith(
-          overlayColor: MaterialStateProperty.all(
-            Colors.white.withOpacity(0.15),
-          ),
-        ),
+        style:
+            ElevatedButton.styleFrom(
+              backgroundColor: DesignSystem.accentSage,
+              foregroundColor: Colors.white,
+              minimumSize: const Size(double.infinity, 56),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(DesignSystem.radiusMD),
+              ),
+              elevation: 0,
+              shadowColor: Colors.transparent,
+            ).copyWith(
+              overlayColor: MaterialStateProperty.all(
+                Colors.white.withOpacity(0.15),
+              ),
+            ),
       ),
       elevatedButtonTheme: ElevatedButtonThemeData(
-        style: ElevatedButton.styleFrom(
-          backgroundColor: DesignSystem.accentSage,
-          foregroundColor: Colors.white,
-          minimumSize: const Size(double.infinity, 56),
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(DesignSystem.radiusMD),
-          ),
-          elevation: 0,
-          shadowColor: Colors.transparent,
-        ).copyWith(
-          overlayColor: MaterialStateProperty.all(
-            Colors.white.withOpacity(0.15),
-          ),
-        ),
+        style:
+            ElevatedButton.styleFrom(
+              backgroundColor: DesignSystem.accentSage,
+              foregroundColor: Colors.white,
+              minimumSize: const Size(double.infinity, 56),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(DesignSystem.radiusMD),
+              ),
+              elevation: 0,
+              shadowColor: Colors.transparent,
+            ).copyWith(
+              overlayColor: MaterialStateProperty.all(
+                Colors.white.withOpacity(0.15),
+              ),
+            ),
       ),
       outlinedButtonTheme: OutlinedButtonThemeData(
         style: OutlinedButton.styleFrom(

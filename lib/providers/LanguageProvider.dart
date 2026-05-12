@@ -15,7 +15,8 @@ class LanguageProvider extends ChangeNotifier {
   Future<void> _loadLanguage() async {
     final prefs = await SharedPreferences.getInstance();
     final savedLanguage = prefs.getString(_languageKey);
-    if (savedLanguage != null && (savedLanguage == 'en' || savedLanguage == 'ur')) {
+    if (savedLanguage != null &&
+        (savedLanguage == 'en' || savedLanguage == 'ur')) {
       _currentLanguage = savedLanguage;
       notifyListeners();
     }
@@ -50,16 +51,20 @@ class LanguageProvider extends ChangeNotifier {
       'app.name': 'JayePanah',
       'app.tagline': 'A Place of Calm in Panic',
       'onboarding.what.title': 'What This App Is',
-      'onboarding.what.description': 'Immediate support during panic attacks. Quick techniques to help you feel grounded and safe.',
+      'onboarding.what.description':
+          'Immediate support during panic attacks. Quick techniques to help you feel grounded and safe.',
       'onboarding.whatnot.title': 'What This App Is Not',
-      'onboarding.whatnot.description': 'This is not therapy. This is not diagnosis. This is first aid for your mind in moments of crisis.',
+      'onboarding.whatnot.description':
+          'This is not therapy. This is not diagnosis. This is first aid for your mind in moments of crisis.',
       'onboarding.privacy.title': 'Privacy & Safety',
-      'onboarding.privacy.description': 'Works offline. No personal data required. Your privacy is protected at all times.',
+      'onboarding.privacy.description':
+          'Works offline. No personal data required. Your privacy is protected at all times.',
       'onboarding.continue': 'Continue',
       'language.title': 'Choose Your Language',
       'language.subtitle': 'You can change this later in Settings',
       'disclaimer.title': 'Important Information',
-      'disclaimer.text': 'JayePanah provides psychological first aid techniques for panic attacks. It is not a substitute for professional mental health care, therapy, or medical diagnosis. It does not replace emergency services. If you are in immediate danger, call your local emergency number or use the Emergency button in the app. For ongoing symptoms or risk to yourself or others, seek qualified professional help.',
+      'disclaimer.text':
+          'JayePanah provides psychological first aid techniques for panic attacks. It is not a substitute for professional mental health care, therapy, or medical diagnosis. It does not replace emergency services. If you are in immediate danger, call your local emergency number or use the Emergency button in the app. For ongoing symptoms or risk to yourself or others, seek qualified professional help.',
       'disclaimer.understand': 'I understand',
       'disclaimer.continue': 'Continue to App',
       'home.title': 'JayePanah',
@@ -71,18 +76,21 @@ class LanguageProvider extends ChangeNotifier {
       'home.helper.title': 'I\'m Helping Someone',
       'home.helper.subtitle': 'Gentle guidance for supporting another person',
       'home.emergency': 'Emergency',
-      'home.greeting': 'Welcome — take your time here. When you feel ready, calming guidance is just a tap away.',
+      'home.greeting':
+          'Welcome — take your time here. When you feel ready, calming guidance is just a tap away.',
       'home.emergency.section': 'Emergency',
       'home.emergency.call_title': 'Emergency call',
       'home.emergency.call_subtitle': 'Your saved number · %s',
       'home.settings': 'Settings',
       'home.learn': 'Learn',
       'home.resume.title': 'Continue previous session?',
-      'home.resume.body': 'You have an unfinished calming guide. Pick up where you left off or start fresh.',
+      'home.resume.body':
+          'You have an unfinished calming guide. Pick up where you left off or start fresh.',
       'home.resume.continue': 'Continue',
       'home.resume.restart': 'Start fresh',
       'home.resume.helper.title': 'Continue helper guide?',
-      'home.resume.helper.body': 'Your helper steps were paused. Continue from where you stopped or begin again.',
+      'home.resume.helper.body':
+          'Your helper steps were paused. Continue from where you stopped or begin again.',
       'flow.home': 'Back to home',
       'settings.title': 'Settings',
       'settings.general': 'General',
@@ -112,51 +120,73 @@ class LanguageProvider extends ChangeNotifier {
       'settings.small': 'Small',
       'settings.medium': 'Medium',
       'settings.large': 'Large',
-      'settings.datausage.description': 'This app works offline and does not collect personal information. Anonymous usage data helps improve the app.',
-      'settings.reset.description': 'This will clear all your preferences and restart the app.',
+      'settings.datausage.description':
+          'This app works offline and does not collect personal information. Anonymous usage data helps improve the app.',
+      'settings.reset.description':
+          'This will clear all your preferences and restart the app.',
       'settings.reset.button': 'Reset Everything',
       'settings.reset.dialog.title': 'Reset settings',
-      'settings.reset.dialog.body': 'This clears preferences stored on this device and returns you to the start of the app. Calming sessions in progress will be cleared.',
+      'settings.reset.dialog.body':
+          'This clears preferences stored on this device and returns you to the start of the app. Calming sessions in progress will be cleared.',
       'settings.reset.dialog.cancel': 'Cancel',
       'settings.reset.dialog.confirm': 'Reset',
-      'settings.contacts.hint': 'Optional: note a name or number you trust (stored only on this device).',
-      'settings.message.hint': 'Optional: a short text you can copy if you need to reach out. Stored only on this device.',
+      'settings.contacts.hint':
+          'Optional: note a name or number you trust (stored only on this device).',
+      'settings.message.hint':
+          'Optional: a short text you can copy if you need to reach out. Stored only on this device.',
       'settings.message.default': 'I need help. I am having a panic attack.',
-      'settings.store.privacy': 'JayePanah stores preferences (language, accessibility, optional notes) only on your device. No account is required. This app is not a medical service.',
-      'settings.purpose.text': 'JayePanah provides evidence-based grounding techniques for panic attacks. Developed with cultural sensitivity for Pakistan.',
-      'settings.disclaimer.text': 'This app is not a replacement for professional mental health care. Always consult qualified professionals for ongoing support.',
-      'settings.resources.text': 'Pakistan Mental Health Helpline: 1166\n\nUmang Helpline: 0311-7786264\n\nIf you are in crisis, please reach out to local emergency services.',
+      'settings.store.privacy':
+          'JayePanah stores preferences (language, accessibility, optional notes) only on your device. No account is required. This app is not a medical service.',
+      'settings.purpose.text':
+          'JayePanah provides evidence-based grounding techniques for panic attacks. Developed with cultural sensitivity for Pakistan.',
+      'settings.disclaimer.text':
+          'This app is not a replacement for professional mental health care. Always consult qualified professionals for ongoing support.',
+      'settings.resources.text':
+          'Pakistan Mental Health Helpline: 1166\n\nUmang Helpline: 0311-7786264\n\nIf you are in crisis, please reach out to local emergency services.',
       'education.title': 'Understanding Panic',
       'education.back': 'Back',
       'education.section1': 'What is a Panic Attack?',
-      'education.section1.text': 'A panic attack is a sudden episode of intense fear or discomfort. It is not dangerous, though it feels overwhelming. Your body is responding to perceived threat—even when you are safe.',
+      'education.section1.text':
+          'A panic attack is a sudden episode of intense fear or discomfort. It is not dangerous, though it feels overwhelming. Your body is responding to perceived threat—even when you are safe.',
       'education.section2': 'What It Feels Like',
-      'education.section2.text': 'Racing heart, shortness of breath, dizziness, feeling unreal, fear of dying. These are normal panic responses. They will pass.',
+      'education.section2.text':
+          'Racing heart, shortness of breath, dizziness, feeling unreal, fear of dying. These are normal panic responses. They will pass.',
       'education.section3': 'What Helps',
-      'education.section3.text': 'Grounding techniques, slow breathing, gentle movement, calm presence. Avoid telling someone to "just relax"—it doesn\'t help.',
+      'education.section3.text':
+          'Grounding techniques, slow breathing, gentle movement, calm presence. Avoid telling someone to "just relax"—it doesn\'t help.',
       'education.section4': 'What Makes It Worse',
-      'education.section4.text': 'Panic about panic. Avoidance. Isolation. Judgment. These extend suffering.',
+      'education.section4.text':
+          'Panic about panic. Avoidance. Isolation. Judgment. These extend suffering.',
       'education.section5': 'How to Support Someone',
-      'education.section5.text': 'Stay calm. Speak softly. Offer simple choices. Remind them they are safe. Do not rush them. Be present.',
+      'education.section5.text':
+          'Stay calm. Speak softly. Offer simple choices. Remind them they are safe. Do not rush them. Be present.',
       'education.section6': 'When to Seek Professional Help',
-      'education.section6.text': 'If panic attacks are frequent, disabling, or accompanied by thoughts of self-harm, professional support is essential. This app is first aid—not treatment.',
+      'education.section6.text':
+          'If panic attacks are frequent, disabling, or accompanied by thoughts of self-harm, professional support is essential. This app is first aid—not treatment.',
       'education.section7': 'How This App Helps',
-      'education.section7.text': 'JayePanah walks you through stabilization, breathing, grounding, and reassurance—skills drawn from psychological first aid. Open it as soon as you notice panic building; the steps are short and you can repeat them.',
+      'education.section7.text':
+          'JayePanah walks you through stabilization, breathing, grounding, and reassurance—skills drawn from psychological first aid. Open it as soon as you notice panic building; the steps are short and you can repeat them.',
       'education.section8': 'Typical Timeline',
-      'education.section8.text': 'Many panic attacks peak within a few minutes, then ease. Feeling shaky, tired, or foggy afterward is common. Rest, drink water, and go gently with yourself.',
+      'education.section8.text':
+          'Many panic attacks peak within a few minutes, then ease. Feeling shaky, tired, or foggy afterward is common. Rest, drink water, and go gently with yourself.',
       'education.section9': 'When It May Be More Than Panic',
-      'education.section9.text': 'Get urgent medical help for severe or crushing chest pain, fainting, breathing trouble that does not improve, confusion, or symptoms that feel completely new. If you are unsure, use Emergency.',
+      'education.section9.text':
+          'Get urgent medical help for severe or crushing chest pain, fainting, breathing trouble that does not improve, confusion, or symptoms that feel completely new. If you are unsure, use Emergency.',
       'education.section10': 'Limits of This App',
-      'education.section10.text': 'JayePanah is not therapy or a diagnosis. It does not replace emergency services or a mental health professional. Use crisis lines in Settings when you need human support.',
+      'education.section10.text':
+          'JayePanah is not therapy or a diagnosis. It does not replace emergency services or a mental health professional. Use crisis lines in Settings when you need human support.',
       'emergency.title': 'Emergency Support',
-      'emergency.text': 'You will be connected to local emergency services. Please stay calm. Help is available.',
+      'emergency.text':
+          'You will be connected to local emergency services. Please stay calm. Help is available.',
       'emergency.call': 'Call Emergency Services',
       'emergency.contact_call': 'Call Trusted Contact',
       'emergency.contact_sms': 'Send Message',
       'emergency.no_contact': 'No trusted contact saved',
       'emergency.cancel': 'Cancel',
-      'emergency.offline': 'You are offline. Emergency calling may not work. Please find someone nearby if possible.',
-      'emergency.call_failed': 'Unable to start the call. Check your device or dial manually.',
+      'emergency.offline':
+          'You are offline. Emergency calling may not work. Please find someone nearby if possible.',
+      'emergency.call_failed':
+          'Unable to start the call. Check your device or dial manually.',
       'severity.title': 'How are you feeling?',
       'severity.mild': 'Anxious / uneasy',
       'severity.moderate': 'Panicking / overwhelmed',
@@ -165,32 +195,44 @@ class LanguageProvider extends ChangeNotifier {
       'severity.moderate.sub': 'Step-by-step grounding and calm',
       'severity.severe.sub': 'Emergency resources shown first',
       'assessment.breathing': 'Are you having trouble breathing?',
-      'assessment.breathing.sub': 'Feeling short of breath or unable to take a full breath',
-      'assessment.control': 'Do you feel like you might lose control or pass out?',
-      'assessment.control.sub': 'Feeling dizzy, faint, or like you\'re not in control',
+      'assessment.breathing.sub':
+          'Feeling short of breath or unable to take a full breath',
+      'assessment.control':
+          'Do you feel like you might lose control or pass out?',
+      'assessment.control.sub':
+          'Feeling dizzy, faint, or like you\'re not in control',
       'assessment.physical': 'Is your heart racing or do you have chest pain?',
-      'assessment.physical.sub': 'Rapid heartbeat, chest tightness, or physical discomfort',
+      'assessment.physical.sub':
+          'Rapid heartbeat, chest tightness, or physical discomfort',
       'assessment.yes': 'Yes',
       'assessment.no': 'No',
       'assessment.result.mild': 'You might be experiencing early anxiety',
-      'assessment.result.mild.desc': 'Let\'s start with some breathing and grounding techniques to help you feel more centered.',
+      'assessment.result.mild.desc':
+          'Let\'s start with some breathing and grounding techniques to help you feel more centered.',
       'assessment.result.moderate': 'You might be experiencing active panic',
-      'assessment.result.moderate.desc': 'We\'ll work through this step by step with guided breathing and grounding exercises.',
+      'assessment.result.moderate.desc':
+          'We\'ll work through this step by step with guided breathing and grounding exercises.',
       'assessment.result.severe': 'You might be experiencing severe panic',
-      'assessment.result.severe.desc': 'You\'re not alone. Let\'s focus on your safety and get you the support you need.',
+      'assessment.result.severe.desc':
+          'You\'re not alone. Let\'s focus on your safety and get you the support you need.',
       'assessment.result.continue': 'Let\'s work through this together',
       'anchor.safe': 'You are safe right now',
       'anchor.call_contact': 'Call Someone',
       'anchor.continue_breathing': 'Continue Breathing',
       'self.stabilization.title': 'You are safe right now',
-      'self.stabilization.subtitle': 'Take a moment to ground yourself. You are in control.',
+      'self.stabilization.subtitle':
+          'Take a moment to ground yourself. You are in control.',
       'self.stabilization.start': 'Continue',
       'self.breathing.continue': 'Continue',
       'self.breathing.inhale': 'Breathe In',
       'self.breathing.exhale': 'Breathe Out',
       'self.breathing.count': 'Breaths',
-      'self.breathing.semantics': 'Breathing guide. Follow the slow in and out rhythm.',
-      'self.breathing.pauseSemantics': 'Pause or resume the breathing animation',
+      'self.breathing.tap_hold': 'Tap and hold to breathe in',
+      'self.breathing.hold_hint': 'Release to hold, then exhale',
+      'self.breathing.semantics':
+          'Breathing guide. Follow the slow in and out rhythm.',
+      'self.breathing.pauseSemantics':
+          'Pause or resume the breathing animation',
       'self.grounding.see': 'Name 5 things you can see',
       'self.grounding.touch': 'Name 4 things you can touch',
       'self.grounding.hear': 'Name 3 things you can hear',
@@ -201,9 +243,12 @@ class LanguageProvider extends ChangeNotifier {
       'self.reassurance.1': 'This is uncomfortable, not dangerous.',
       'self.reassurance.2': 'Your body is protecting you.',
       'self.reassurance.3': 'This will pass.',
-      'self.reassurance.4': 'Symptoms often peak, then ease. You can ride this wave.',
-      'self.reassurance.5': 'You have handled hard moments before. One breath, one step.',
-      'self.reassurance.6': 'A frightening thought is not a fact. You can be safe right now.',
+      'self.reassurance.4':
+          'Symptoms often peak, then ease. You can ride this wave.',
+      'self.reassurance.5':
+          'You have handled hard moments before. One breath, one step.',
+      'self.reassurance.6':
+          'A frightening thought is not a fact. You can be safe right now.',
       'self.reassurance.next': 'Next',
       'self.reassurance.continue': 'Continue',
       'self.recovery.question': 'How do you feel now?',
@@ -217,11 +262,14 @@ class LanguageProvider extends ChangeNotifier {
       'helper.immediate.lower': 'Lower stimulation',
       'helper.communication.title': 'Communication Guide',
       'helper.communication.say': 'What to say',
-      'helper.communication.say.text': 'Speak softly. Use simple, reassuring words: "You are safe. I am here with you. This will pass." Offer to breathe slowly together when they are ready—no pressure.',
+      'helper.communication.say.text':
+          'Speak softly. Use simple, reassuring words: "You are safe. I am here with you. This will pass." Offer to breathe slowly together when they are ready—no pressure.',
       'helper.communication.dont': 'What NOT to say',
-      'helper.communication.dont.text': 'Avoid "just relax" or "calm down". Do not minimize their experience. Do not rush them.',
+      'helper.communication.dont.text':
+          'Avoid "just relax" or "calm down". Do not minimize their experience. Do not rush them.',
       'helper.communication.tone': 'Tone guidance',
-      'helper.communication.tone.text': 'Speak slowly and calmly. Use a gentle, steady voice. Match their breathing pace if possible.',
+      'helper.communication.tone.text':
+          'Speak slowly and calmly. Use a gentle, steady voice. Match their breathing pace if possible.',
       'helper.breathing.title': 'Breathe together',
       'helper.environmental.title': 'Environmental Control',
       'helper.environmental.noise': 'Reduce noise',
@@ -233,9 +281,11 @@ class LanguageProvider extends ChangeNotifier {
       'helper.assessment.reducing': 'Is panic reducing?',
       'helper.escalation.title': 'Escalation Decision',
       'helper.escalation.redflags': 'Medical red flags',
-      'helper.escalation.redflags.text': 'Chest pain, difficulty breathing, loss of consciousness, or signs of medical emergency require immediate professional help.',
+      'helper.escalation.redflags.text':
+          'Chest pain, difficulty breathing, loss of consciousness, or signs of medical emergency require immediate professional help.',
       'helper.escalation.justification': 'When to escalate',
-      'helper.escalation.justification.text': 'If symptoms persist, worsen, or if there are any medical concerns, seek professional help immediately. This app provides first aid, not medical treatment.',
+      'helper.escalation.justification.text':
+          'If symptoms persist, worsen, or if there are any medical concerns, seek professional help immediately. This app provides first aid, not medical treatment.',
       'helper.escalation.emergency': 'Call Emergency',
       'helper.escalation.finish': 'Finish',
       'calm.corner.title': 'Calm Corner',
@@ -246,6 +296,10 @@ class LanguageProvider extends ChangeNotifier {
       'calm.game.title': 'Bubble Pop',
       'calm.game.subtitle': 'Tap the bubbles gently',
       'calm.game.popped': 'Bubbles Popped',
+      'calm.game.score': 'Score',
+      'calm.game.missed': 'Missed',
+      'calm.game.over': 'Game Over',
+      'calm.game.playagain': 'Play again',
       'calm.sound.rain': 'Gentle Rain',
       'calm.sound.ocean': 'Ocean Waves',
       'calm.sound.keyboard': 'Keyboard ASMR',
@@ -258,6 +312,8 @@ class LanguageProvider extends ChangeNotifier {
       'calm.match.won': 'You matched them all!',
       'calm.match.playagain': 'Great focus. Want to play again?',
       'calm.match.restart': 'Play again',
+      'calm.match.tries': 'Tries',
+      'calm.match.time': 'Time',
       'calm.color.title': 'Color Breathe',
       'calm.color.subtitle': 'Watch colors shift with your breathing',
       'calm.color.inhale': 'Breathe In',
@@ -268,16 +324,20 @@ class LanguageProvider extends ChangeNotifier {
       'app.name': 'جائے پناہ',
       'app.tagline': 'گھبراہٹ میں سکون کی جگہ',
       'onboarding.what.title': 'یہ ایپ کیا ہے',
-      'onboarding.what.description': 'گھبراہٹ کے دوران فوری مدد۔ آپ کو پرسکون اور محفوظ محسوس کرنے میں مدد کے لیے آسان طریقے۔',
+      'onboarding.what.description':
+          'گھبراہٹ کے دوران فوری مدد۔ آپ کو پرسکون اور محفوظ محسوس کرنے میں مدد کے لیے آسان طریقے۔',
       'onboarding.whatnot.title': 'یہ ایپ کیا نہیں ہے',
-      'onboarding.whatnot.description': 'یہ علاج نہیں ہے۔ یہ تشخیص نہیں ہے۔ یہ بحران کے لمحات میں آپ کے ذہن کے لیے ابتدائی طبی امداد ہے۔',
+      'onboarding.whatnot.description':
+          'یہ علاج نہیں ہے۔ یہ تشخیص نہیں ہے۔ یہ بحران کے لمحات میں آپ کے ذہن کے لیے ابتدائی طبی امداد ہے۔',
       'onboarding.privacy.title': 'رازداری اور حفاظت',
-      'onboarding.privacy.description': 'آف لائن کام کرتا ہے۔ ذاتی معلومات کی ضرورت نہیں۔ آپ کی رازداری ہر وقت محفوظ ہے۔',
+      'onboarding.privacy.description':
+          'آف لائن کام کرتا ہے۔ ذاتی معلومات کی ضرورت نہیں۔ آپ کی رازداری ہر وقت محفوظ ہے۔',
       'onboarding.continue': 'جاری رکھیں',
       'language.title': 'اپنی زبان منتخب کریں',
       'language.subtitle': 'آپ اسے بعد میں ترتیبات میں تبدیل کر سکتے ہیں',
       'disclaimer.title': 'اہم معلومات',
-      'disclaimer.text': 'جائے پناہ گھبراہٹ کے حملوں کے لیے نفسیاتی ابتدائی طبی امداد کی تکنیک فراہم کرتا ہے۔ یہ پیشہ ورانہ ذہنی صحت کی دیکھ بھال، تھراپی، یا طبی تشخیص کا متبادل نہیں۔ یہ ہنگامی خدمات کی جگہ نہیں۔ فوری خطرے میں مقامی ہنگامی نمبر پر کال کریں یا ایپ میں ہنگامی بٹن استعمال کریں۔ جاری علامات یا خود یا دوسروں کو نقصان کے خطرے کے لیے قابل اہل پیشہ ور مدد لیں۔',
+      'disclaimer.text':
+          'جائے پناہ گھبراہٹ کے حملوں کے لیے نفسیاتی ابتدائی طبی امداد کی تکنیک فراہم کرتا ہے۔ یہ پیشہ ورانہ ذہنی صحت کی دیکھ بھال، تھراپی، یا طبی تشخیص کا متبادل نہیں۔ یہ ہنگامی خدمات کی جگہ نہیں۔ فوری خطرے میں مقامی ہنگامی نمبر پر کال کریں یا ایپ میں ہنگامی بٹن استعمال کریں۔ جاری علامات یا خود یا دوسروں کو نقصان کے خطرے کے لیے قابل اہل پیشہ ور مدد لیں۔',
       'disclaimer.understand': 'میں سمجھتا/سمجھتی ہوں',
       'disclaimer.continue': 'ایپ پر جائیں',
       'home.title': 'جائے پناہ',
@@ -289,18 +349,21 @@ class LanguageProvider extends ChangeNotifier {
       'home.helper.title': 'میں کسی کی مدد کر رہا ہوں',
       'home.helper.subtitle': 'دوسرے شخص کی معاونت کے لیے آسان رہنمائی',
       'home.emergency': 'ہنگامی صورتحال',
-      'home.greeting': 'خوش آمدید — یہاں اپنی رفتار سے آگے بڑھیں۔ جب آپ تیار ہوں، آسان رہنمائی ایک تھپتھپاہٹ پر ہے۔',
+      'home.greeting':
+          'خوش آمدید — یہاں اپنی رفتار سے آگے بڑھیں۔ جب آپ تیار ہوں، آسان رہنمائی ایک تھپتھپاہٹ پر ہے۔',
       'home.emergency.section': 'ہنگام',
       'home.emergency.call_title': 'ہنگامی کال',
       'home.emergency.call_subtitle': 'آپ کا محفوظ نمبر · %s',
       'home.settings': 'ترتیبات',
       'home.learn': 'سیکھیں',
       'home.resume.title': 'پچھلا سیشن جاری رکھیں؟',
-      'home.resume.body': 'آپ کی پرسکون کرنے والی رہنمائی ادھوری ہے۔ جہاں چھوڑا تھا وہاں سے شروع کریں یا نئے سرے سے۔',
+      'home.resume.body':
+          'آپ کی پرسکون کرنے والی رہنمائی ادھوری ہے۔ جہاں چھوڑا تھا وہاں سے شروع کریں یا نئے سرے سے۔',
       'home.resume.continue': 'جاری رکھیں',
       'home.resume.restart': 'نئے سرے سے',
       'home.resume.helper.title': 'مددگار رہنمائی جاری رکھیں؟',
-      'home.resume.helper.body': 'آپ کے مددگار مراحل رک گئے تھے۔ وہیں سے جاری کریں یا دوبارہ شروع کریں۔',
+      'home.resume.helper.body':
+          'آپ کے مددگار مراحل رک گئے تھے۔ وہیں سے جاری کریں یا دوبارہ شروع کریں۔',
       'flow.home': 'ہوم پر واپس',
       'settings.title': 'ترتیبات',
       'settings.general': 'عام',
@@ -330,51 +393,74 @@ class LanguageProvider extends ChangeNotifier {
       'settings.small': 'چھوٹا',
       'settings.medium': 'درمیانہ',
       'settings.large': 'بڑا',
-      'settings.datausage.description': 'یہ ایپ آف لائن کام کرتی ہے اور ذاتی معلومات جمع نہیں کرتی۔ گمنام استعمال کا ڈیٹا ایپ کو بہتر بنانے میں مدد کرتا ہے۔',
-      'settings.reset.description': 'یہ آپ کی تمام ترجیحات کو صاف کر دے گا اور ایپ کو دوبارہ شروع کرے گا۔',
+      'settings.datausage.description':
+          'یہ ایپ آف لائن کام کرتی ہے اور ذاتی معلومات جمع نہیں کرتی۔ گمنام استعمال کا ڈیٹا ایپ کو بہتر بنانے میں مدد کرتا ہے۔',
+      'settings.reset.description':
+          'یہ آپ کی تمام ترجیحات کو صاف کر دے گا اور ایپ کو دوبارہ شروع کرے گا۔',
       'settings.reset.button': 'سب کچھ دوبارہ ترتیب دیں',
       'settings.reset.dialog.title': 'ترتیبات دوبارہ ترتیب دیں',
-      'settings.reset.dialog.body': 'یہ اس آلہ پر محفوظ ترجیحات صاف کر دے گا اور ایپ کا آغاز دکھائے گا۔ جاری سکون سیشنز بھی صاف ہو جائیں گے۔',
+      'settings.reset.dialog.body':
+          'یہ اس آلہ پر محفوظ ترجیحات صاف کر دے گا اور ایپ کا آغاز دکھائے گا۔ جاری سکون سیشنز بھی صاف ہو جائیں گے۔',
       'settings.reset.dialog.cancel': 'منسوخ',
       'settings.reset.dialog.confirm': 'دوبارہ ترتیب',
-      'settings.contacts.hint': 'اختیاری: کسی قابل اعتماد نام یا نمبر کا نوٹ (صرف اس آلہ پر)۔',
-      'settings.message.hint': 'اختیاری: مدد کے لیے بھیجنے کے لیے مختصر متن۔ صرف اس آلہ پر محفوظ۔',
-      'settings.message.default': 'مجھے مدد چاہیے۔ مجھے گھبراہٹ کا دورہ پڑ رہا ہے۔',
-      'settings.store.privacy': 'جائے پناہ صرف آپ کے آلہ پر ترجیحات (زبان، رسائی، اختیاری نوٹس) رکھتا ہے۔ اکاؤنٹ درکار نہیں۔ یہ طبی خدمت نہیں۔',
-      'settings.purpose.text': 'جائے پناہ گھبراہٹ کے حملوں کے لیے ثبوت پر مبنی بنیادی تکنیک فراہم کرتا ہے۔ پاکستان کے لیے ثقافتی حساسیت کے ساتھ تیار کیا گیا۔',
-      'settings.disclaimer.text': 'یہ ایپ پیشہ ورانہ ذہنی صحت کی دیکھ بھال کا متبادل نہیں ہے۔ جاری مدد کے لیے ہمیشہ قابل اہل پیشہ ور افراد سے مشورہ کریں۔',
-      'settings.resources.text': 'پاکستان ذہنی صحت ہیلپ لائن: 1166\n\nامنگ ہیلپ لائن: 0311-7786264\n\nاگر آپ بحران میں ہیں تو براہ کرم مقامی ہنگامی خدمات سے رابطہ کریں۔',
+      'settings.contacts.hint':
+          'اختیاری: کسی قابل اعتماد نام یا نمبر کا نوٹ (صرف اس آلہ پر)۔',
+      'settings.message.hint':
+          'اختیاری: مدد کے لیے بھیجنے کے لیے مختصر متن۔ صرف اس آلہ پر محفوظ۔',
+      'settings.message.default':
+          'مجھے مدد چاہیے۔ مجھے گھبراہٹ کا دورہ پڑ رہا ہے۔',
+      'settings.store.privacy':
+          'جائے پناہ صرف آپ کے آلہ پر ترجیحات (زبان، رسائی، اختیاری نوٹس) رکھتا ہے۔ اکاؤنٹ درکار نہیں۔ یہ طبی خدمت نہیں۔',
+      'settings.purpose.text':
+          'جائے پناہ گھبراہٹ کے حملوں کے لیے ثبوت پر مبنی بنیادی تکنیک فراہم کرتا ہے۔ پاکستان کے لیے ثقافتی حساسیت کے ساتھ تیار کیا گیا۔',
+      'settings.disclaimer.text':
+          'یہ ایپ پیشہ ورانہ ذہنی صحت کی دیکھ بھال کا متبادل نہیں ہے۔ جاری مدد کے لیے ہمیشہ قابل اہل پیشہ ور افراد سے مشورہ کریں۔',
+      'settings.resources.text':
+          'پاکستان ذہنی صحت ہیلپ لائن: 1166\n\nامنگ ہیلپ لائن: 0311-7786264\n\nاگر آپ بحران میں ہیں تو براہ کرم مقامی ہنگامی خدمات سے رابطہ کریں۔',
       'education.title': 'گھبراہٹ کو سمجھنا',
       'education.back': 'واپس',
       'education.section1': 'گھبراہٹ کا دورہ کیا ہے؟',
-      'education.section1.text': 'گھبراہٹ کا دورہ شدید خوف یا بے چینی کی اچانک قسط ہے۔ یہ خطرناک نہیں ہے، حالانکہ یہ بہت زیادہ محسوس ہوتا ہے۔ آپ کا جسم خطرے کا جواب دے رہا ہے—یہاں تک کہ جب آپ محفوظ ہوں۔',
+      'education.section1.text':
+          'گھبراہٹ کا دورہ شدید خوف یا بے چینی کی اچانک قسط ہے۔ یہ خطرناک نہیں ہے، حالانکہ یہ بہت زیادہ محسوس ہوتا ہے۔ آپ کا جسم خطرے کا جواب دے رہا ہے—یہاں تک کہ جب آپ محفوظ ہوں۔',
       'education.section2': 'یہ کیسا محسوس ہوتا ہے',
-      'education.section2.text': 'تیز دھڑکن، سانس کی کمی، چکر آنا، غیر حقیقی محسوس کرنا، مرنے کا خوف۔ یہ عام گھبراہٹ کے ردعمل ہیں۔ یہ گزر جائیں گے۔',
+      'education.section2.text':
+          'تیز دھڑکن، سانس کی کمی، چکر آنا، غیر حقیقی محسوس کرنا، مرنے کا خوف۔ یہ عام گھبراہٹ کے ردعمل ہیں۔ یہ گزر جائیں گے۔',
       'education.section3': 'کیا مدد کرتا ہے',
-      'education.section3.text': 'بنیادی تکنیک، آہستہ سانس لینا، نرم حرکت، پرسکون موجودگی۔ کسی کو "بس آرام کرو" کہنے سے گریز کریں—یہ مدد نہیں کرتا۔',
+      'education.section3.text':
+          'بنیادی تکنیک، آہستہ سانس لینا، نرم حرکت، پرسکون موجودگی۔ کسی کو "بس آرام کرو" کہنے سے گریز کریں—یہ مدد نہیں کرتا۔',
       'education.section4': 'کیا اسے بدتر بناتا ہے',
-      'education.section4.text': 'گھبراہٹ کے بارے میں گھبراہٹ۔ بچنا۔ تنہائی۔ فیصلہ۔ یہ تکلیف کو بڑھاتے ہیں۔',
+      'education.section4.text':
+          'گھبراہٹ کے بارے میں گھبراہٹ۔ بچنا۔ تنہائی۔ فیصلہ۔ یہ تکلیف کو بڑھاتے ہیں۔',
       'education.section5': 'کسی کی مدد کیسے کریں',
-      'education.section5.text': 'پرسکون رہیں۔ آہستہ سے بولیں۔ آسان انتخاب پیش کریں۔ انہیں یاد دلائیں کہ وہ محفوظ ہیں۔ جلدی نہ کریں۔ موجود رہیں۔',
+      'education.section5.text':
+          'پرسکون رہیں۔ آہستہ سے بولیں۔ آسان انتخاب پیش کریں۔ انہیں یاد دلائیں کہ وہ محفوظ ہیں۔ جلدی نہ کریں۔ موجود رہیں۔',
       'education.section6': 'پیشہ ورانہ مدد کب لینی ہے',
-      'education.section6.text': 'اگر گھبراہٹ کے دورے بار بار، معذور کن، یا خود کو نقصان پہنچانے کے خیالات کے ساتھ ہیں، تو پیشہ ورانہ مدد ضروری ہے۔ یہ ایپ ابتدائی طبی امداد ہے—علاج نہیں۔',
+      'education.section6.text':
+          'اگر گھبراہٹ کے دورے بار بار، معذور کن، یا خود کو نقصان پہنچانے کے خیالات کے ساتھ ہیں، تو پیشہ ورانہ مدد ضروری ہے۔ یہ ایپ ابتدائی طبی امداد ہے—علاج نہیں۔',
       'education.section7': 'یہ ایپ کیسے مدد کرتی ہے',
-      'education.section7.text': 'جائے پناہ آپ کو مستحکم کرنا، سانس، بنیاد بندی، اور تسلی کے مراحل سے گزارتا ہے—نفسیاتی ابتدائی امداد کے مہارتیں۔ گھبراہٹ بڑھتے ہی کھولیں؛ مراحل مختصر ہیں اور دہرائے جا سکتے ہیں۔',
+      'education.section7.text':
+          'جائے پناہ آپ کو مستحکم کرنا، سانس، بنیاد بندی، اور تسلی کے مراحل سے گزارتا ہے—نفسیاتی ابتدائی امداد کے مہارتیں۔ گھبراہٹ بڑھتے ہی کھولیں؛ مراحل مختصر ہیں اور دہرائے جا سکتے ہیں۔',
       'education.section8': 'عام وقت',
-      'education.section8.text': 'بہت سے دورے چند منٹ میں بلند ہوتے پھر ہلکے پڑتے ہیں۔ بعد میں کانپنا، تھکاوٹ، یا دھندلاپن عام ہے۔ آرام، پانی، اور اپنے ساتھ نرمی۔',
+      'education.section8.text':
+          'بہت سے دورے چند منٹ میں بلند ہوتے پھر ہلکے پڑتے ہیں۔ بعد میں کانپنا، تھکاوٹ، یا دھندلاپن عام ہے۔ آرام، پانی، اور اپنے ساتھ نرمی۔',
       'education.section9': 'جب شاید صرف گھبراہٹ نہ ہو',
-      'education.section9.text': 'شدید سینے کا درد، بے ہوشی، بہتر نہ ہونے والی سانس کی دشواری، الجھن، یا بالکل نئی علامات پر فوری طبی مدد لیں۔ یقین نہ ہو تو ہنگامی بٹن استعمال کریں۔',
+      'education.section9.text':
+          'شدید سینے کا درد، بے ہوشی، بہتر نہ ہونے والی سانس کی دشواری، الجھن، یا بالکل نئی علامات پر فوری طبی مدد لیں۔ یقین نہ ہو تو ہنگامی بٹن استعمال کریں۔',
       'education.section10': 'ایپ کی حدود',
-      'education.section10.text': 'جائے پناہ تھراپی یا تشخیص نہیں۔ یہ ہنگامی خدمات یا ماہر نفسیات کا متبادل نہیں۔ انسانی مدد کے لیے ترتیبات میں بحران لائنز دیکھیں۔',
+      'education.section10.text':
+          'جائے پناہ تھراپی یا تشخیص نہیں۔ یہ ہنگامی خدمات یا ماہر نفسیات کا متبادل نہیں۔ انسانی مدد کے لیے ترتیبات میں بحران لائنز دیکھیں۔',
       'emergency.title': 'ہنگامی مدد',
-      'emergency.text': 'آپ کو مقامی ہنگامی خدمات سے جوڑ دیا جائے گا۔ براہ کرم پرسکون رہیں۔ مدد دستیاب ہے۔',
+      'emergency.text':
+          'آپ کو مقامی ہنگامی خدمات سے جوڑ دیا جائے گا۔ براہ کرم پرسکون رہیں۔ مدد دستیاب ہے۔',
       'emergency.call': 'ہنگامی خدمات کو کال کریں',
       'emergency.contact_call': 'قابل اعتماد رابطہ کو کال کریں',
       'emergency.contact_sms': 'پیغام بھیجیں',
       'emergency.no_contact': 'کوئی قابل اعتماد رابطہ محفوظ نہیں',
       'emergency.cancel': 'منسوخ کریں',
-      'emergency.offline': 'آپ آف لائن ہیں۔ ہنگامی کالنگ کام نہیں کر سکتی۔ اگر ممکن ہو تو قریب کسی کو تلاش کریں۔',
-      'emergency.call_failed': 'کال شروع نہیں ہو سکی۔ آلہ چیک کریں یا خود نمبر ملائیں۔',
+      'emergency.offline':
+          'آپ آف لائن ہیں۔ ہنگامی کالنگ کام نہیں کر سکتی۔ اگر ممکن ہو تو قریب کسی کو تلاش کریں۔',
+      'emergency.call_failed':
+          'کال شروع نہیں ہو سکی۔ آلہ چیک کریں یا خود نمبر ملائیں۔',
       'severity.title': 'آپ کیسا محسوس کر رہے ہیں؟',
       'severity.mild': 'فکر مند / بے چین',
       'severity.moderate': 'گھبراہٹ / بے حد دباؤ',
@@ -384,30 +470,42 @@ class LanguageProvider extends ChangeNotifier {
       'severity.severe.sub': 'ہنگامی وسائل پہلے دکھائے جائے گے',
       'assessment.breathing': 'کیا آپ کو سانس لینے میں دشواری ہو رہی ہے؟',
       'assessment.breathing.sub': 'سانس کم محسوس کرنا یا مکمل سانس نہ لے پانا',
-      'assessment.control': 'کیا آپ کو ایسا محسوس ہو رہا ہے کہ آپ قابو کھو دیں گے یا بے ہوش ہو جائیں گے؟',
+      'assessment.control':
+          'کیا آپ کو ایسا محسوس ہو رہا ہے کہ آپ قابو کھو دیں گے یا بے ہوش ہو جائیں گے؟',
       'assessment.control.sub': 'چکر آنا، بے ہوشی محسوس کرنا، یا قابو نہ ہونا',
-      'assessment.physical': 'کیا آپ کا دل تیزی سے دھڑک رہا ہے یا سینے میں درد ہے؟',
-      'assessment.physical.sub': 'تیزی سے دل کی دھڑکن، سینے میں تنگی، یا جسمانی تکلیف',
+      'assessment.physical':
+          'کیا آپ کا دل تیزی سے دھڑک رہا ہے یا سینے میں درد ہے؟',
+      'assessment.physical.sub':
+          'تیزی سے دل کی دھڑکن، سینے میں تنگی، یا جسمانی تکلیف',
       'assessment.yes': 'ہاں',
       'assessment.no': 'نہیں',
-      'assessment.result.mild': 'آپ ابتدائی فکرمندی کا سامنا کر رہے ہو سکتے ہیں',
-      'assessment.result.mild.desc': 'آئیے سانس لینے اور زمین سے جڑنے کی تکنیکوں کے ساتھ شروع کریں تاکہ آپ زیادہ متوازن محسوس کریں۔',
-      'assessment.result.moderate': 'آپ فعال گھبراہٹ کا سامنا کر رہے ہو سکتے ہیں',
-      'assessment.result.moderate.desc': 'ہم رہنمائی شدہ سانس لینے اور زمین سے جڑنے کی مشقوں کے ذریعے مرحلہ وار اس پر کام کریں گے۔',
+      'assessment.result.mild':
+          'آپ ابتدائی فکرمندی کا سامنا کر رہے ہو سکتے ہیں',
+      'assessment.result.mild.desc':
+          'آئیے سانس لینے اور زمین سے جڑنے کی تکنیکوں کے ساتھ شروع کریں تاکہ آپ زیادہ متوازن محسوس کریں۔',
+      'assessment.result.moderate':
+          'آپ فعال گھبراہٹ کا سامنا کر رہے ہو سکتے ہیں',
+      'assessment.result.moderate.desc':
+          'ہم رہنمائی شدہ سانس لینے اور زمین سے جڑنے کی مشقوں کے ذریعے مرحلہ وار اس پر کام کریں گے۔',
       'assessment.result.severe': 'آپ شدید گھبراہٹ کا سامنا کر رہے ہو سکتے ہیں',
-      'assessment.result.severe.desc': 'آپ اکیلے نہیں ہیں۔ آئیے آپ کی حفاظت پر توجہ دیں اور آپ کو ضروری معاونت دیں۔',
+      'assessment.result.severe.desc':
+          'آپ اکیلے نہیں ہیں۔ آئیے آپ کی حفاظت پر توجہ دیں اور آپ کو ضروری معاونت دیں۔',
       'assessment.result.continue': 'آئیے اس پر ایک ساتھ کام کریں',
       'anchor.safe': 'آپ ابھی محفوظ ہیں',
       'anchor.call_contact': 'کسی کو کال کریں',
       'anchor.continue_breathing': 'سانس لینا جاری رکھیں',
       'self.stabilization.title': 'آپ اب محفوظ ہیں',
-      'self.stabilization.subtitle': 'اپنے آپ کو زمین سے جوڑنے کے لیے ایک لمحہ لیں۔ آپ کنٹرول میں ہیں۔',
+      'self.stabilization.subtitle':
+          'اپنے آپ کو زمین سے جوڑنے کے لیے ایک لمحہ لیں۔ آپ کنٹرول میں ہیں۔',
       'self.stabilization.start': 'جاری رکھیں',
       'self.breathing.continue': 'جاری رکھیں',
       'self.breathing.inhale': 'سانس اندر لیں',
       'self.breathing.exhale': 'سانس باہر کریں',
       'self.breathing.count': 'سانسیں',
-      'self.breathing.semantics': 'سانس کی رہنمائی۔ آہستہ اندر اور باہر کی رفتار پر چلیں۔',
+      'self.breathing.tap_hold': 'سانس اندر لینے کے لیے دبا کر رکھیں',
+      'self.breathing.hold_hint': 'چھوڑیں، سانس روکیں، پھر باہر نکالیں',
+      'self.breathing.semantics':
+          'سانس کی رہنمائی۔ آہستہ اندر اور باہر کی رفتار پر چلیں۔',
       'self.breathing.pauseSemantics': 'سانس کی حرکت روکیں یا دوبارہ شروع کریں',
       'self.grounding.see': '5 چیزیں بتائیں جو آپ دیکھ سکتے ہیں',
       'self.grounding.touch': '4 چیزیں بتائیں جو آپ چھو سکتے ہیں',
@@ -419,9 +517,12 @@ class LanguageProvider extends ChangeNotifier {
       'self.reassurance.1': 'یہ تکلیف دہ ہے، خطرناک نہیں۔',
       'self.reassurance.2': 'آپ کا جسم آپ کی حفاظت کر رہا ہے۔',
       'self.reassurance.3': 'یہ گزر جائے گا۔',
-      'self.reassurance.4': 'علامات اکثر چڑھتی ہیں، پھر ہلکی پڑتی ہیں۔ آپ اس لہر کے ساتھ رہ سکتے ہیں۔',
-      'self.reassurance.5': 'آپ نے مشکل لمحات پہلے بھی سہے ہیں۔ ایک سانس، ایک قدم۔',
-      'self.reassurance.6': 'خوفناک خیال حقیقت نہیں۔ آپ اب بھی محفوظ ہو سکتے ہیں۔',
+      'self.reassurance.4':
+          'علامات اکثر چڑھتی ہیں، پھر ہلکی پڑتی ہیں۔ آپ اس لہر کے ساتھ رہ سکتے ہیں۔',
+      'self.reassurance.5':
+          'آپ نے مشکل لمحات پہلے بھی سہے ہیں۔ ایک سانس، ایک قدم۔',
+      'self.reassurance.6':
+          'خوفناک خیال حقیقت نہیں۔ آپ اب بھی محفوظ ہو سکتے ہیں۔',
       'self.reassurance.next': 'اگلا',
       'self.reassurance.continue': 'جاری رکھیں',
       'self.recovery.question': 'آپ اب کیسا محسوس کر رہے ہیں؟',
@@ -435,11 +536,14 @@ class LanguageProvider extends ChangeNotifier {
       'helper.immediate.lower': 'محرکات کم کریں',
       'helper.communication.title': 'مواصلاتی رہنمائی',
       'helper.communication.say': 'کیا کہنا ہے',
-      'helper.communication.say.text': 'آہستہ سے بولیں۔ سادہ، تسلی بخش الفاظ: "آپ محفوظ ہیں۔ میں آپ کے ساتھ ہوں۔ یہ گزر جائے گا۔" جب وہ تیار ہوں تو آہستہ سانس ایک ساتھ لینے کی پیشکش کریں—دباؤ نہ ڈالیں۔',
+      'helper.communication.say.text':
+          'آہستہ سے بولیں۔ سادہ، تسلی بخش الفاظ: "آپ محفوظ ہیں۔ میں آپ کے ساتھ ہوں۔ یہ گزر جائے گا۔" جب وہ تیار ہوں تو آہستہ سانس ایک ساتھ لینے کی پیشکش کریں—دباؤ نہ ڈالیں۔',
       'helper.communication.dont': 'کیا نہیں کہنا',
-      'helper.communication.dont.text': '"بس آرام کرو" یا "پرسکون ہو جاؤ" کہنے سے گریز کریں۔ ان کے تجربے کو کم نہ سمجھیں۔ انہیں جلدی نہ کریں۔',
+      'helper.communication.dont.text':
+          '"بس آرام کرو" یا "پرسکون ہو جاؤ" کہنے سے گریز کریں۔ ان کے تجربے کو کم نہ سمجھیں۔ انہیں جلدی نہ کریں۔',
       'helper.communication.tone': 'لہجے کی رہنمائی',
-      'helper.communication.tone.text': 'آہستہ اور پرسکون طریقے سے بولیں۔ نرم، مستحکم آواز استعمال کریں۔ اگر ممکن ہو تو ان کی سانس لینے کی رفتار سے میل کھائیں۔',
+      'helper.communication.tone.text':
+          'آہستہ اور پرسکون طریقے سے بولیں۔ نرم، مستحکم آواز استعمال کریں۔ اگر ممکن ہو تو ان کی سانس لینے کی رفتار سے میل کھائیں۔',
       'helper.breathing.title': 'ایک ساتھ سانس لیں',
       'helper.environmental.title': 'ماحولیاتی کنٹرول',
       'helper.environmental.noise': 'شور کم کریں',
@@ -451,19 +555,26 @@ class LanguageProvider extends ChangeNotifier {
       'helper.assessment.reducing': 'کیا گھبراہٹ کم ہو رہی ہے؟',
       'helper.escalation.title': 'تشویش کا فیصلہ',
       'helper.escalation.redflags': 'طبی خطرے کی علامات',
-      'helper.escalation.redflags.text': 'سینے میں درد، سانس لینے میں دشواری، ہوش کھو جانا، یا طبی ہنگامی صورتحال کی علامات فوری پیشہ ورانہ مدد کی ضرورت ہوتی ہے۔',
+      'helper.escalation.redflags.text':
+          'سینے میں درد، سانس لینے میں دشواری، ہوش کھو جانا، یا طبی ہنگامی صورتحال کی علامات فوری پیشہ ورانہ مدد کی ضرورت ہوتی ہے۔',
       'helper.escalation.justification': 'کب تشویش کریں',
-      'helper.escalation.justification.text': 'اگر علامات برقرار رہیں، بدتر ہوں، یا کوئی طبی تشویش ہو تو فوری طور پر پیشہ ورانہ مدد حاصل کریں۔ یہ ایپ ابتدائی طبی امداد فراہم کرتی ہے، علاج نہیں۔',
+      'helper.escalation.justification.text':
+          'اگر علامات برقرار رہیں، بدتر ہوں، یا کوئی طبی تشویش ہو تو فوری طور پر پیشہ ورانہ مدد حاصل کریں۔ یہ ایپ ابتدائی طبی امداد فراہم کرتی ہے، علاج نہیں۔',
       'helper.escalation.emergency': 'ہنگامی کال کریں',
       'helper.escalation.finish': 'ختم کریں',
       'calm.corner.title': 'سکون کا کونا',
       'calm.corner.subtitle': 'سکون بخش آوازیں اور کھیل',
       'calm.sounds.title': 'آواز گیلری',
-      'calm.sounds.subtitle': 'آواز چلانے کے لیے ٹیپ کریں • رکنے کے لیے دوبارہ ٹیپ کریں',
+      'calm.sounds.subtitle':
+          'آواز چلانے کے لیے ٹیپ کریں • رکنے کے لیے دوبارہ ٹیپ کریں',
       'calm.sounds.playing': 'اب بج رہی ہے',
       'calm.game.title': 'بلبلے پھوڑیں',
       'calm.game.subtitle': 'آہستہ سے بلبلے پھوڑیں',
       'calm.game.popped': 'پھوڑے گئے بلبلے',
+      'calm.game.score': 'اسکور',
+      'calm.game.missed': 'چھوٹ گئے',
+      'calm.game.over': 'کھیل ختم',
+      'calm.game.playagain': 'دوبارہ کھیلیں',
       'calm.sound.rain': 'نرم بارش',
       'calm.sound.ocean': 'سمندر کی لہریں',
       'calm.sound.keyboard': 'کی بورڈ کی آوازیں',
@@ -476,6 +587,8 @@ class LanguageProvider extends ChangeNotifier {
       'calm.match.won': 'آپ نے سب کا میل کھا دیا!',
       'calm.match.playagain': 'بہترین توجہ۔ دوبارہ کھیلنا ہے؟',
       'calm.match.restart': 'دوبارہ کھیلیں',
+      'calm.match.tries': 'کوششیں',
+      'calm.match.time': 'وقت',
       'calm.color.title': 'رنگ کی سانسیں',
       'calm.color.subtitle': 'اپنی سانسوں کے ساتھ رنگ بدلتے دیکھیں',
       'calm.color.inhale': 'سانس اندر لیں',

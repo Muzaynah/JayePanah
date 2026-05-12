@@ -102,7 +102,8 @@ class _EducationCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
-    final titleKey = 'education.$sectionKey.title';
+    // FIXED: Using correct keys to match LanguageProvider.dart
+    final titleKey = 'education.$sectionKey';
     final textKey = 'education.$sectionKey.text';
 
     return GlassCard(

@@ -25,35 +25,48 @@ class GlassCard extends StatelessWidget {
     final radius = borderRadius ?? BorderRadius.circular(DesignSystem.radiusLG);
     final isDark = Theme.of(context).brightness == Brightness.dark;
 
-    // Light mode: white at 50%, border at 75%
-    // Dark mode: dark green-tinted at 60%, border at 10%
     final tint = tintColor ?? (isDark ? const Color(0xFF1E2820) : Colors.white);
-    final opacity = tintOpacity ?? (isDark ? 0.60 : 0.50);
-    final borderOpacity = isDark ? 0.10 : 0.75;
-    final blurRadius = isDark ? 16.0 : 14.0;
+    final opacity = tintOpacity ?? (isDark ? 0.68 : 0.54);
+    final borderColor = isDark
+        ? Colors.white.withOpacity(0.14)
+        : Colors.black.withOpacity(0.10);
+    final blurRadius = isDark ? 18.0 : 16.0;
+    final shadowColor = isDark
+        ? Colors.black.withOpacity(0.18)
+        : Colors.black.withOpacity(0.10);
 
     return Material(
       color: Colors.transparent,
       child: InkWell(
         onTap: onTap,
         borderRadius: radius,
+        splashColor: Colors.white.withOpacity(0.12),
+        highlightColor: Colors.white.withOpacity(0.06),
         child: Container(
           decoration: BoxDecoration(
-            color: tint.withValues(alpha: opacity),
-            borderRadius: radius,
-            border: Border.all(
-              color: Colors.white.withValues(alpha: borderOpacity),
-              width: 1.0,
+            gradient: LinearGradient(
+              begin: Alignment.topLeft,
+              end: Alignment.bottomRight,
+              colors: [
+                tint.withOpacity(opacity),
+                tint.withOpacity(opacity * 0.84),
+              ],
             ),
+            borderRadius: radius,
+            border: Border.all(color: borderColor, width: 1.2),
+            boxShadow: [
+              BoxShadow(
+                color: shadowColor,
+                blurRadius: 18,
+                offset: const Offset(0, 10),
+              ),
+            ],
           ),
           child: ClipRRect(
             borderRadius: radius,
             child: BackdropFilter(
               filter: ImageFilter.blur(sigmaX: blurRadius, sigmaY: blurRadius),
-              child: Padding(
-                padding: padding,
-                child: child,
-              ),
+              child: Padding(padding: padding, child: child),
             ),
           ),
         ),
@@ -101,19 +114,13 @@ class SceneBackground extends StatelessWidget {
                   ? const LinearGradient(
                       begin: Alignment.topCenter,
                       end: Alignment.bottomCenter,
-                      colors: [
-                        Color(0xFF141A18),
-                        Color(0xFF111520),
-                      ],
+                      colors: [Color(0xFF141A18), Color(0xFF111520)],
                       stops: [0.0, 1.0],
                     )
                   : const LinearGradient(
                       begin: Alignment.topLeft,
                       end: Alignment.bottomRight,
-                      colors: [
-                        Color(0xFFF0EEE8),
-                        Color(0xFFEAEDF0),
-                      ],
+                      colors: [Color(0xFFF0EEE8), Color(0xFFEAEDF0)],
                       stops: [0.0, 1.0],
                     ),
             ),
@@ -258,9 +265,7 @@ class BackgroundBlob extends StatelessWidget {
             ],
           ),
         ),
-        child: BackdropFilter(
-          filter: ImageFilter.blur(sigmaX: 80, sigmaY: 80),
-        ),
+        child: BackdropFilter(filter: ImageFilter.blur(sigmaX: 80, sigmaY: 80)),
       ),
     );
   }
